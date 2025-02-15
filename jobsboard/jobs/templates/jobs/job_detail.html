@@ -1,7 +1,7 @@
 {% extends 'jobs/base.html' %}
 {% block content %}
 <br><br><br><br><br><br>
-<div class="container">
+<div class="container job-details-container">
   <div class="card mb-3">
     <div class="row no-gutters">
       {% if job.company.logo %}
@@ -16,10 +16,15 @@
           <p class="card-text">
             <small class="text-muted">{{ job.company.company_name }} – {{ job.location }}</small>
           </p>
+          <!-- Show "Apply" buttons only if the user is NOT an employer -->
+          {% if user.is_authenticated and user.profile.user_type != "employer" %}
+            
           
             <a href="{{ job.external_apply_url }}" class="btn btn-success" target="_blank">Apply Externally</a>
           
+          
             <a href="{% url 'apply_job' job.pk %}" class="btn btn-success">Apply Now</a>
+          {% endif %}
           
         </div>
       </div>

@@ -11,6 +11,19 @@
                     <div class="card-header justify-content-center">
                       <h3 class="font-weight-light my-1 text-center">Sign In</h3>
                     </div>
+
+                    <!-- Display Success Messages -->
+                    {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                    {% endif %}
+
                     {% if form.errors %}
                         <div class="alert alert-danger alert-dismissible" role="alert">
                             <div id="form_errors">
@@ -29,14 +42,8 @@
                             <div class="form-row">
                                 <div class="col-md-10 offset-md-1">
                                     <div class="form-group">
-                                        <a href="#"
-                                               class="btn btn-link btn-lg active btn-block">Sign in with GitHub</a>
-                                        <a href="#"
-                                               class="btn btn-link btn-lg active btn-block">Sign in with Google</a>
-                                        <hr>
-                                        <p class="text-center"><strong>OR</strong></p>
-                                        <hr>
-                                        <label class="small mb-1">Username</label>
+                                
+                                        <label class="small mb-1">Username:</label>
                                         {{ form.username }}
                                     </div>
                                 </div>
@@ -44,10 +51,10 @@
                             <div class="form-row">
                                 <div class="col-md-10 offset-md-1">
                                     <div class="form-group">
-                                      <label class="small mb-1">Password</label>
+                                      <label class="small mb-1">Password:</label>
                                       {{ form.password }}
                                     </div>
-                                </div>
+                                </div><br>
                             </div>
                             <div class="form-row">
                                 <div class="col-md-10 offset-md-1">
@@ -55,7 +62,7 @@
                                         <!-- Add a Remember me functionality -->
                                         {{ form.remember_me }}
                                         <label> Remember me</label>
-                                    </div>
+                                    </div><br>
                                 </div>
                             </div>
                             <div class="form-row">

@@ -39,7 +39,7 @@ class RegisterView(View):
             form.save()
 
             username = form.cleaned_data.get('username')
-            messages.success(request, f'Account created for {username}')
+            messages.success(request, f'Account created for {username} you can now log in using your credentials')
 
             return redirect(to='login')
         

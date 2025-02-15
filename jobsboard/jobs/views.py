@@ -131,6 +131,12 @@ def apply_job(request, pk):
     Allow a logged-in user to apply for a job.
     """
     job = get_object_or_404(Job, pk=pk)
+
+    # Check if the user has already applied
+    if Application.objects.filter(job=job, applicant=request.user).exists():
+        messages.error(request, "You have already applied for this job.")
+          
+    
     if request.method == 'POST':
         form = ApplicationForm(request.POST, request.FILES)
         if form.is_valid():
@@ -138,8 +144,9 @@ def apply_job(request, pk):
             application.job = job
             application.applicant = request.user
             application.save()
-
             messages.success(request, "Your application has been sent successfully!")
+              
+
             
         
         

@@ -2850,4 +2850,8 @@ section,
   margin: 0 0 10px;
 }
 
+.job-details-container {
+  max-width: 700px; /* Adjust this value as needed */
+  margin: auto; /* Center the container */
+}
 
