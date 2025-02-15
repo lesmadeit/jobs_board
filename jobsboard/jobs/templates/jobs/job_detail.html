@@ -1,0 +1,34 @@
+{% extends 'jobs/base.html' %}
+{% block content %}
+<br><br><br><br><br><br>
+<div class="container">
+  <div class="card mb-3">
+    <div class="row no-gutters">
+      {% if job.company.logo %}
+      <div class="col-md-4">
+        <img src="{{ job.company.logo.url }}" class="card-img" alt="{{ job.company.company_name }}">
+      </div>
+      {% endif %}
+      <div class="col-md-8">
+        <div class="card-body">
+          <h3 class="card-title">{{ job.title }}</h3>
+          <p class="card-text">{{ job.description }}</p>
+          <p class="card-text">
+            <small class="text-muted">{{ job.company.company_name }} – {{ job.location }}</small>
+          </p>
+          
+            <a href="{{ job.external_apply_url }}" class="btn btn-success" target="_blank">Apply Externally</a>
+          
+            <a href="{% url 'apply_job' job.pk %}" class="btn btn-success">Apply Now</a>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+  {% if user.is_authenticated and user == job.company.user %}
+    <a href="{% url 'job_update' job.pk %}" class="btn btn-success">Edit Job</a>
+    <a href="{% url 'view_applicants' job.pk %}" class="btn btn-secondary">View Applicants</a>
+  {% endif %}
+</div>
+<br><br><br><br><br><br>
+{% endblock %}

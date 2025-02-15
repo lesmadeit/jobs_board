@@ -1,0 +1,40 @@
+{% extends 'jobs/base.html' %}
+{% block content %}
+
+
+<br><br><br><br><br><br><br>
+<div class="container">
+  <h1>Job Listings</h1>
+  <form method="get" class="form-inline mb-3">
+    <input type="text" name="q" class="form-control mr-2" placeholder="Search jobs" value="{{ request.GET.q }}"><br>
+    <input type="text" name="location" class="form-control mr-2" placeholder="Location" value="{{ request.GET.location }}"><br>
+    <select name="job_type" class="form-select mr-2">
+      <option value="">Job Type</option>
+      <option value="full_time" {% if request.GET.job_type == "full_time" %}selected{% endif %}>Full-Time</option>
+      <option value="part_time" {% if request.GET.job_type == "part_time" %}selected{% endif %}>Part-Time</option>
+      <option value="contract" {% if request.GET.job_type == "contract" %}selected{% endif %}>Contract</option>
+      <option value="internship" {% if request.GET.job_type == "internship" %}selected{% endif %}>Internship</option>
+    </select><br>
+    <button type="submit" class="btn btn-primary">Search</button>
+  </form>
+  <div class="row">
+    {% for job in jobs %}
+    <div class="col-md-2">
+      <div class="card mb-2">
+        {% if job.company.logo %}
+        <img src="{{ job.company.logo.url }}" class="card-img-top" alt="{{ job.company.company_name }}">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ job.title }}</h5>
+          <p class="card-text">{{ job.company.company_name }} – {{ job.location }}</p>
+          <a href="{% url 'job_detail' job.pk %}" class="btn btn-primary">View Job</a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <p>No jobs found.</p>
+    {% endfor %}
+  </div>
+</div>
+<br><br><br><br>
+{% endblock %}
