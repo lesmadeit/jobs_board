@@ -19,7 +19,7 @@
   </form>
   <div class="row">
     {% for job in jobs %}
-    <div class="col-md-2">
+    <div class="col-md-3">
       <div class="card mb-2">
         {% if job.company.logo %}
         <img src="{{ job.company.logo.url }}" class="card-img-top" alt="{{ job.company.company_name }}">
@@ -27,6 +27,8 @@
         <div class="card-body">
           <h5 class="card-title">{{ job.title }}</h5>
           <p class="card-text">{{ job.company.company_name }} – {{ job.location }}</p>
+          <p class="card-text"><small class="text-muted">Salary: Ksh {{ job.salary_min }}-{{ job.salary_max }} </small></p>
+          
           <a href="{% url 'job_detail' job.pk %}" class="btn btn-primary">View Job</a>
         </div>
       </div>

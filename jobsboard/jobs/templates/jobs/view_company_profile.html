@@ -1,0 +1,27 @@
+{% extends "jobs/base.html" %}
+
+
+
+{% block content %}
+<br><br><br><br><br><br>
+<div class="container mt-5">
+    <h2>Company Profile</h2>
+    <div class="col-md-7">
+        <div class="card card">
+            <div class="card-body">
+                <h4 class="card-title">{{ profile.name }}</h4>
+                <p><strong>Industry:</strong> {{ profile.industry }}</p>
+                <p><strong>Location:</strong> {{ profile.location }}</p>
+                <p><strong>Description:</strong> {{ profile.description }}</p>
+
+                {% if profile.logo %}
+                    <img src="{{ profile.logo.url }}" alt="{{ profile.name }}" class="img-fluid" style="max-width: 200px;">
+                {% endif %}
+                
+                <a href="{% url 'company_profile_update' %}" class="btn btn-primary mt-3">Edit Profile</a>
+            </div>
+        </div>
+    </div>
+</div>
+<br><br><br><br><br>
+{% endblock %}

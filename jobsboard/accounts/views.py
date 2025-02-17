@@ -7,6 +7,7 @@ from django.views import View
 from django.contrib.auth.decorators import login_required
 from .models import Profile
 from django.contrib.auth import logout
+from django.shortcuts import render, redirect, get_object_or_404
 
 
 from .forms import RegisterForm, LoginForm, UpdateUserForm, UpdateProfileForm
@@ -93,6 +94,10 @@ class CustomLogoutView(View):
 @login_required
 def profile(request):
     profile, created = Profile.objects.get_or_create(user=request.user)  # Ensures profile exists
+
+    if not created:
+        return redirect('view_profile')
+    
     if request.method == 'POST':
         user_form = UpdateUserForm(request.POST, instance=request.user)
         profile_form = UpdateProfileForm(request.POST, request.FILES, instance=request.user.profile)
@@ -100,10 +105,45 @@ def profile(request):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
-            messages.success(request, 'Your profile is updated successful')
-            return redirect(to='profile')
+            
+            return redirect('view_profile')
     else:
         user_form = UpdateUserForm(instance=request.user)
         profile_form = UpdateProfileForm(instance=request.user.profile)
 
     return render(request, 'accounts/profile.html', {'user_form': user_form, 'profile_form': profile_form})
+@login_required
+def profile_update(request):
+    """
+    Allow a user to update their profile.
+    """
+    profile = get_object_or_404(Profile, user=request.user)
+
+    if request.method == 'POST':
+        user_form = UpdateUserForm(request.POST, instance=request.user)
+        profile_form = UpdateProfileForm(request.POST, request.FILES, instance=profile)
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            
+            return redirect('view_profile')  # Redirect back to profile view
+    else:
+        user_form = UpdateUserForm(instance=request.user)
+        profile_form = UpdateProfileForm(instance=profile)
+
+    return render(request, 'accounts/profile_update.html', {'user_form': user_form, 'profile_form': profile_form})
+
+
+@login_required
+def view_profile(request):
+    """
+    Display the user's profile with an edit button.
+    """
+    profile = get_object_or_404(Profile, user=request.user)
+    
+    return render(request, 'accounts/view_profile.html', {'profile': profile})
+
+
+
+

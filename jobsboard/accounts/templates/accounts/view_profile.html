@@ -1,0 +1,27 @@
+{% extends "jobs/base.html" %}
+
+{% block content %}
+
+<br><br><br><br>
+<div class="container mt-5">
+    <h2>Your Profile</h2>
+    
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">{{ profile.user.username }}</h4>
+            <p><strong>Email:</strong> {{ profile.user.email }}</p>
+            <p><strong>Full Name:</strong> {{ profile.full_name }}</p>
+            <p><strong>Bio:</strong> {{ profile.bio }}</p>
+
+            {% if profile.image %}
+                <p><strong>Profile Picture:</strong></p>
+                <img src="{{ profile.image.url }}" alt="Profile Image" class="img-fluid" style="max-width: 200px;">
+            {% endif %}
+            
+            <a href="{% url 'profile_update' %}" class="btn btn-primary mt-3">Edit Profile</a>
+        </div>
+    </div>
+</div>
+
+<br><br><br><br>
+{% endblock %}

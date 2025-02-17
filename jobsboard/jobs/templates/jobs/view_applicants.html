@@ -6,7 +6,7 @@
   {% for app in applications %}
     <div class="card mb-2">
       <div class="card-body">
-        <h5 class="card-title">{{ app.applicant.username }}</h5>
+        <h5 class="card-title">{{ app.applicant.first_name }} {{ app.applicant.last_name }} </h5>
         <p class="card-text">Applied on: {{ app.applied_at|date:"M d, Y" }}</p>
         <p class="card-text">Status: {{ app.status }}</p>
         <a href="{{ app.resume.url }}" class="btn btn-link" target="_blank">View Resume</a>

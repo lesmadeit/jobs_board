@@ -1,5 +1,5 @@
 from django.urls import path, include, re_path
-from .views import  profile, RegisterView
+from .views import  profile, RegisterView, view_profile, profile_update
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
@@ -10,11 +10,14 @@ from accounts.forms import LoginForm
 
 
 urlpatterns = [
+     
     
     path('register/', RegisterView.as_view(), name="register"),
     path('login/', CustomLoginView.as_view(redirect_authenticated_user=True, template_name='accounts/login.html',
                                            authentication_form=LoginForm), name='login'),
-     path('profile/', profile, name='profile'),                                      
+    path('profile/create/', profile, name='profile'),
+    path('profile/edit/', profile_update, name='profile_update'),
+    path('profile/', view_profile, name='view_profile'),                                    
 
     path('logout/', CustomLogoutView.as_view(), name='logout'),
 

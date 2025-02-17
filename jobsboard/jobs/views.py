@@ -9,6 +9,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Job, CompanyProfile, Application
 from .forms import CompanyProfileForm, JobForm, ApplicationForm
+from django.http import HttpResponseRedirect
 
 
 
@@ -52,22 +53,30 @@ def contact(request):
 
 def job_list(request):
     """
-    Display public jobs with basic search/filtering.
+    Display jobs based on the user type:
+    - Employers see only their posted jobs.
+    - Candidates see all public jobs.
     """
-    jobs = Job.objects.filter(is_public=True).order_by('-created_at')
+    jobs = Job.objects.filter(is_public=True).order_by('-created_at')  # Default: Show all public jobs
+
+    if request.user.is_authenticated and hasattr(request.user, 'company_profile'):
+        # If the user is an employer, show only their posted jobs
+        jobs = Job.objects.filter(company=request.user.company_profile).order_by('-created_at')
+
+    # Apply filters (for both candidates & employers)
     query = request.GET.get('q')
     if query:
-        jobs = jobs.filter(title__icontains=query)  # search by job title (you can extend this)
+        jobs = jobs.filter(title__icontains=query)
+
     job_type = request.GET.get('job_type')
     if job_type:
         jobs = jobs.filter(job_type=job_type)
+
     location = request.GET.get('location')
     if location:
         jobs = jobs.filter(location__icontains=location)
-    context = {
-        'jobs': jobs,
-    }
-    return render(request, 'jobs/job_list.html', context)
+
+    return render(request, 'jobs/job_list.html', {'jobs': jobs})
 
 
 
@@ -132,12 +141,14 @@ def apply_job(request, pk):
     """
     job = get_object_or_404(Job, pk=pk)
 
-    # Check if the user has already applied
-    if Application.objects.filter(job=job, applicant=request.user).exists():
-        messages.error(request, "You have already applied for this job.")
+    
           
     
     if request.method == 'POST':
+        # Check if the user has already applied to avoid duplicate application
+        if Application.objects.filter(job=job, applicant=request.user).exists():
+            messages.error(request, "You have already applied for this job.")
+            return redirect('job_detail', pk=pk)
         form = ApplicationForm(request.POST, request.FILES)
         if form.is_valid():
             application = form.save(commit=False)
@@ -145,11 +156,9 @@ def apply_job(request, pk):
             application.applicant = request.user
             application.save()
             messages.success(request, "Your application has been sent successfully!")
+            return HttpResponseRedirect('apply_job', pk=pk)
               
-
-            
-        
-        
+ 
 
     else:
         form = ApplicationForm()
@@ -180,7 +189,7 @@ def company_profile_create(request):
     try:
         # If already exists, redirect to edit page.
         request.user.company_profile
-        return redirect('company_profile_update')
+        return redirect('company_profile_view')
     except CompanyProfile.DoesNotExist:
         pass
 
@@ -190,7 +199,7 @@ def company_profile_create(request):
             profile = form.save(commit=False)
             profile.user = request.user
             profile.save()
-            return redirect('jobs')  # or your dashboard
+            return redirect('company_profile_view')  # or your dashboard
     else:
         form = CompanyProfileForm()
     return render(request, 'jobs/company_profile_form.html', {'form': form})
@@ -209,7 +218,18 @@ def company_profile_update(request):
         form = CompanyProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
-            return redirect('jobs')  # or your dashboard
+            return redirect('company_profile_view')  # or your dashboard
     else:
         form = CompanyProfileForm(instance=profile)
     return render(request, 'jobs/company_profile_form.html', {'form': form})
+
+
+@login_required
+@user_passes_test(is_employer)
+def company_profile_view(request):
+    """
+    Display the company profile with an edit button.
+    """
+    profile = get_object_or_404(CompanyProfile, user=request.user)
+    
+    return render(request, 'jobs/view_company_profile.html', {'profile': profile})

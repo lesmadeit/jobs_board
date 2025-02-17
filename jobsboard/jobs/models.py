@@ -21,6 +21,7 @@ EXPERIENCE_LEVEL_CHOICES = (
 class CompanyProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='company_profile')
     company_name = models.CharField(max_length=255)
+    industry = models.CharField(max_length=100, null=True)
     description = models.TextField(blank=True)
     website = models.URLField(blank=True)
     logo = models.ImageField(upload_to='company_logos/', blank=True, null=True)
@@ -38,8 +39,8 @@ class Job(models.Model):
     description = models.TextField()
     location = models.CharField(max_length=255)
     job_type = models.CharField(max_length=50, choices=JOB_TYPE_CHOICES)
-    salary_min = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    salary_max = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    salary_min = models.PositiveIntegerField( null=True, blank=True)
+    salary_max = models.PositiveIntegerField( null=True, blank=True)
     remote = models.BooleanField(default=False)
     experience_level = models.CharField(max_length=50, choices=EXPERIENCE_LEVEL_CHOICES)
     is_public = models.BooleanField(default=True)

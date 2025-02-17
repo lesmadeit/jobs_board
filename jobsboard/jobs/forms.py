@@ -15,9 +15,10 @@ class ContactusForm(forms.Form):
 class CompanyProfileForm(forms.ModelForm):
     class Meta:
         model = CompanyProfile
-        fields = ['company_name', 'description', 'website', 'logo', 'location']
+        fields = ['company_name', 'industry', 'description', 'website', 'logo', 'location']
         widgets = {
             'company_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'industry': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'website': forms.URLInput(attrs={'class': 'form-control'}),
             'logo': forms.ClearableFileInput(attrs={'class': 'form-control'}),
