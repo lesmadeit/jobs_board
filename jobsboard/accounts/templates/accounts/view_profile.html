@@ -10,7 +10,7 @@
         <div class="card-body">
             <h4 class="card-title">{{ profile.user.username }}</h4>
             <p><strong>Email:</strong> {{ profile.user.email }}</p>
-            <p><strong>Full Name:</strong> {{ profile.full_name }}</p>
+            <p><strong>Full Name:</strong> {{ profile.user.first_name }} {{ profile.user.last_name }}</p>
             <p><strong>Bio:</strong> {{ profile.bio }}</p>
 
             {% if profile.image %}

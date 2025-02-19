@@ -35,6 +35,16 @@
             </div>
 
             <div class="mb-3">
+              <label for="id_description" class="form-label">Required Skills</label>
+              {{ form.required_skills }}
+            </div>
+
+            <div class="mb-3">
+              <label for="id_description" class="form-label">Education and Experience</label>
+              {{ form.education_experience }}
+            </div>
+
+            <div class="mb-3">
               <label for="id_salary_min" class="form-label">Minimum Salary</label>
               {{ form.salary_min }}
             </div>
@@ -44,9 +54,10 @@
               {{ form.salary_max }}
             </div>
 
-            <div class="mb-3">
-              <label for="id_remote" class="form-label">Remote</label>
-              {{ form.remote }}
+            <div class="mb-3 form-check">
+              <label class="form-check-label">
+                {{ form.remote }} Remote
+              </label>
             </div>
 
             <div class="mb-3">
@@ -54,10 +65,17 @@
               {{ form.experience_level }}
             </div>
 
-            <div class="mb-3">
-              <label for="id_is_public" class="form-label">Public Job</label>
-              {{ form.is_public }}
+            <div class="mb-3 form-check">
+              <label class="form-check-label">
+                {{ form.is_public }} Public Job
+              </label>
             </div>
+
+            <div class="mb-3">
+              <label for="id_application_deadline" class="form-label">Application Deadline</label>
+              {{ form.application_deadline }}
+            </div>
+            
 
             <div class="mb-3">
               <label for="id_external_apply_url" class="form-label">External Apply URL</label>

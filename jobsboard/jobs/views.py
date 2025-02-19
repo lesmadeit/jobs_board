@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Job, CompanyProfile, Application
 from .forms import CompanyProfileForm, JobForm, ApplicationForm
 from django.http import HttpResponseRedirect
+from django.core.paginator import Paginator
 
 
 
@@ -76,7 +77,11 @@ def job_list(request):
     if location:
         jobs = jobs.filter(location__icontains=location)
 
-    return render(request, 'jobs/job_list.html', {'jobs': jobs})
+    paginator = Paginator(jobs, 4)  # Show 5 jobs per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'jobs/job_list.html', {'page_obj': page_obj})
 
 
 

@@ -112,6 +112,7 @@ def profile(request):
         profile_form = UpdateProfileForm(instance=request.user.profile)
 
     return render(request, 'accounts/profile.html', {'user_form': user_form, 'profile_form': profile_form})
+
 @login_required
 def profile_update(request):
     """

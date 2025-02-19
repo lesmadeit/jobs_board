@@ -15,12 +15,13 @@ class ContactusForm(forms.Form):
 class CompanyProfileForm(forms.ModelForm):
     class Meta:
         model = CompanyProfile
-        fields = ['company_name', 'industry', 'description', 'website', 'logo', 'location']
+        fields = ['company_name', 'industry', 'description', 'website', 'email', 'logo', 'location']
         widgets = {
             'company_name': forms.TextInput(attrs={'class': 'form-control'}),
             'industry': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'website': forms.URLInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Enter company email'}),
             'logo': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'location': forms.TextInput(attrs={'class': 'form-control'}),
         }
@@ -32,7 +33,8 @@ class JobForm(forms.ModelForm):
         fields = [
             'title', 'description', 'location', 'job_type',
             'salary_min', 'salary_max', 'remote', 'experience_level',
-            'is_public', 'external_apply_url'
+            'is_public', 'external_apply_url', 'required_skills', 'education_experience',
+            'application_deadline'
         ]
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
@@ -45,12 +47,14 @@ class JobForm(forms.ModelForm):
             'experience_level': forms.Select(attrs={'class': 'form-select'}),
             'is_public': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'external_apply_url': forms.URLInput(attrs={'class': 'form-control'}),
+            'required_skills': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'List skills in point form'}),
+            'education_experience': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'List education and experience requirements in point form'}),
+            'application_deadline': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }
 
 
 
-from django import forms
-from .models import Application
+
 
 class ApplicationForm(forms.ModelForm):
     class Meta:

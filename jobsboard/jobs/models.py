@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.core.validators import EmailValidator
 
 
 JOB_TYPE_CHOICES = (
@@ -22,8 +22,13 @@ class CompanyProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='company_profile')
     company_name = models.CharField(max_length=255)
     industry = models.CharField(max_length=100, null=True)
-    description = models.TextField(blank=True)
+    description = models.TextField(blank=True)  
     website = models.URLField(blank=True)
+    email = models.EmailField(
+        max_length=255,
+        blank=True,
+        validators=[EmailValidator(message="Enter a valid email address")]
+    )
     logo = models.ImageField(upload_to='company_logos/', blank=True, null=True)
     location = models.CharField(max_length=255, blank=True)
 
@@ -46,6 +51,10 @@ class Job(models.Model):
     is_public = models.BooleanField(default=True)
     external_apply_url = models.URLField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    required_skills = models.TextField(help_text="Enter skills in point form", blank=True)
+    education_experience = models.TextField(help_text="Enter educational and experience requirements", blank=True)
+    application_deadline = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return self.title
