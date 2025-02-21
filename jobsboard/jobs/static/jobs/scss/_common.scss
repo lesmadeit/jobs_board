@@ -271,7 +271,7 @@ hr {
 		top: 0;
 		width: 101%;
 		height: 101%;
-		background:#da2461;
+		background:#4DA674;;
 		z-index: 1;
 		border-radius: 5px;
 		transition: transform 0.5s;
@@ -291,9 +291,9 @@ hr {
 
 
 .head-btn2 {
-	background: none;
-	border: 1px solid $theme-color;
-	color: #fb246a;
+	background: #4DA674;;
+	border: 1px solid #4DA674;;
+	color: #4DA674;;
 	@media #{$lg}{
 		padding: 27px 34px;
 	}
@@ -942,7 +942,7 @@ hr {
         }
     }
     span{
-        color: #fb246a;
+        color: #4DA674;
         text-transform: uppercase;
         margin-bottom: 28px;
         display: block;

@@ -7,10 +7,12 @@ from django.contrib.auth.decorators import user_passes_test
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Job, CompanyProfile, Application
+from .models import Job, CompanyProfile, Application, JOB_TYPE_CHOICES, EXPERIENCE_LEVEL_CHOICES
 from .forms import CompanyProfileForm, JobForm, ApplicationForm
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator
+from datetime import timedelta
+from django.utils.timezone import now
 
 
 
@@ -50,38 +52,58 @@ def contact(request):
             return render(request, "jobs/contactussuccess.html")
     return render(request, "jobs/contact_us.html", {'form':sub})
 
-
+POSTED_WITHIN_CHOICES = [
+    ('any', 'Any'),
+    ('1', 'Today'),
+    ('2', 'Last 2 days'),
+    ('3', 'Last 3 days'),
+    ('5', 'Last 5 days'),
+    ('10', 'Last 10 days'),
+]
 
 def job_list(request):
-    """
-    Display jobs based on the user type:
-    - Employers see only their posted jobs.
-    - Candidates see all public jobs.
-    """
-    jobs = Job.objects.filter(is_public=True).order_by('-created_at')  # Default: Show all public jobs
+    jobs = Job.objects.filter(is_public=True).order_by('-created_at')
 
     if request.user.is_authenticated and hasattr(request.user, 'company_profile'):
-        # If the user is an employer, show only their posted jobs
         jobs = Job.objects.filter(company=request.user.company_profile).order_by('-created_at')
 
-    # Apply filters (for both candidates & employers)
+    # Apply filters
     query = request.GET.get('q')
     if query:
         jobs = jobs.filter(title__icontains=query)
 
-    job_type = request.GET.get('job_type')
+    job_type = request.GET.getlist('job_type')
     if job_type:
-        jobs = jobs.filter(job_type=job_type)
+        jobs = jobs.filter(job_type__in=job_type)
+
+    experience_level = request.GET.getlist('experience_level')
+    if experience_level:
+        jobs = jobs.filter(experience_level__in=experience_level)
 
     location = request.GET.get('location')
     if location:
         jobs = jobs.filter(location__icontains=location)
 
-    paginator = Paginator(jobs, 4)  # Show 5 jobs per page
+    # Filter by "posted within"
+    posted_within = request.GET.get('posted_within', 'any')  # Default to "any"
+    if posted_within.isdigit():  # Ensure it's a valid number
+        days = int(posted_within)
+        jobs = jobs.filter(created_at__gte=now() - timedelta(days=days))
+
+    paginator = Paginator(jobs, 4)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'jobs/job_list.html', {'page_obj': page_obj})
+    return render(request, 'jobs/job_list.html', {
+        'page_obj': page_obj,
+        'job_type_choices': JOB_TYPE_CHOICES,
+        'selected_job_types': job_type,
+        'experience_level_choices': EXPERIENCE_LEVEL_CHOICES,
+        'selected_experience_levels': experience_level,
+        'posted_within_choices': POSTED_WITHIN_CHOICES,
+        'selected_posted_within': posted_within,
+    })
+
 
 
 

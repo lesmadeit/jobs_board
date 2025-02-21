@@ -1,4 +1,5 @@
 {% load static %}
+
 <!doctype html>
 
 <html class="no-js" lang="zxx">
@@ -51,6 +52,8 @@
                 box-shadow: 0px 0px 10px rgba(0, 123, 255, 0.7);
             }
         }
+
+        
       </style>
   </head>
   <body>
@@ -99,8 +102,8 @@
                                 {% if user.is_authenticated %}
                                     <a style="border-radius: 10px;" href="{% url 'logout' %}" class="btn head-btn2">Logout</a>
                                 {% else %}
-                                    <a style="border-radius: 10px;" href="{% url 'register' %}" class="btn head-btn1">Register</a>
-                                    <a style="border-radius: 10px;" href="{% url 'login' %}" class="btn head-btn2">Login</a>
+                                    <a style="border-radius: 10px; background-color: #023336;" href="{% url 'register' %}" class="btn head-btn1 custom-hover">Register</a>
+                                    <a style="border-radius: 10px; background-color: #023336; border: #023336; color: #fff;" href="{% url 'login' %}" class="btn head-btn2">Login</a>
                                 {% endif %}
                             </div>
                         </div>

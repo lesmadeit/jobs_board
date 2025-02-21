@@ -1,10 +1,11 @@
 {% extends 'jobs/base.html' %}
+{% load static %}
 {% block content %}
 
 
 <!-- Hero Area Start-->
 <div class="slider-area ">
-  <div class="single-slider section-overly slider-height2 d-flex align-items-center" data-background="assets/img/hero/about.jpg">
+  <div class="single-slider section-overly slider-height2 d-flex align-items-center" data-background="{% static 'jobs/img/hero/about.jpg' %}">
       <div class="container">
           <div class="row">
               <div class="col-xl-12">
@@ -24,14 +25,8 @@
   <form method="get" class="form-inline mb-3">
     <input type="text" name="q" class="form-control mr-2" placeholder="Search jobs" value="{{ request.GET.q }}"><br>
     <input type="text" name="location" class="form-control mr-2" placeholder="Location" value="{{ request.GET.location }}"><br><br><br>
-    <select name="job_type" class="form-select mr-2">
-      <option value="">Job Type</option>
-      <option value="full_time" {% if request.GET.job_type == "full_time" %}selected{% endif %}>Full-Time</option>
-      <option value="part_time" {% if request.GET.job_type == "part_time" %}selected{% endif %}>Part-Time</option>
-      <option value="contract" {% if request.GET.job_type == "contract" %}selected{% endif %}>Contract</option>
-      <option value="internship" {% if request.GET.job_type == "internship" %}selected{% endif %}>Internship</option>
-    </select><br><br><br>
-    <button style="border-radius: 10px;" type="submit" class="btn btn-primary">Search</button>
+    
+    <button style="border-radius: 10px;" type="submit" class="btn btn-primary btn-sm p-4">Search</button>
   </form>
       <div class="row">
           <!-- Left content -->
@@ -70,128 +65,68 @@
                       </div>
                       <!--  Select job items End-->
                       <!-- select-Categories start -->
-                      <div class="select-Categories pt-80 pb-50">
-                          <div class="small-section-tittle2">
-                              <h4>Job Type</h4>
-                          </div>
-                          <label class="container">Full Time
-                              <input type="checkbox" >
-                              <span class="checkmark"></span>
-                          </label>
-                          <label class="container">Part Time
-                              <input type="checkbox" checked="checked active">
-                              <span class="checkmark"></span>
-                          </label>
-                          <label class="container">Remote
-                              <input type="checkbox">
-                              <span class="checkmark"></span>
-                          </label>
-                          <label class="container">Freelance
-                              <input type="checkbox">
-                              <span class="checkmark"></span>
-                          </label>
-                      </div>
+                      
+                      <form id="filter-form" method="GET" action="{% url 'jobs' %}">
+                            <!-- Job Type Filters -->
+                            <div class="select-Categories pt-80 pb-50">
+                                <div class="small-section-tittle2">
+                                    <h4>Job Type</h4>
+                                </div>
+                                
+                                    {% for key, label in job_type_choices %}
+                                        <label class="container">{{ label }}
+                                            <input type="checkbox" name="job_type" value="{{ key }}" 
+                                                {% if key in selected_job_types %}checked{% endif %}
+                                                onchange="this.form.submit()">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    {% endfor %}
+                            </div>
+                            <!-- Experience Level Filters -->
+                            <div class="select-Categories pt-80 pb-50">
+                                <div class="small-section-tittle2">
+                                    <h4>Experience Level</h4>
+                                </div>
+                                {% for key, label in experience_level_choices %}
+                                    <label class="container">{{ label }}
+                                        <input type="checkbox" name="experience_level" value="{{ key }}"
+                                            {% if key in selected_experience_levels %}checked{% endif %}>
+                                        <span class="checkmark"></span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                            <div class="select-Categories pb-50">
+                                <div class="small-section-tittle2">
+                                    <h4>Posted Within</h4>
+                                </div>
+                                {% for days, label in posted_within_choices %}
+                                    <label class="container">{{ label }}
+                                        <input type="radio" name="posted_within" value="{{ days }}"
+                                            {% if days == selected_posted_within %}checked{% endif %}
+                                            onchange="this.form.submit()"> <!-- Auto-submit on selection -->
+                                        <span class="checkmark"></span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                            <button id="filter-submit" type="submit" style="display: none;"></button>
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function() {
+                                    let checkboxes = document.querySelectorAll("input[type=checkbox]");
+                                    checkboxes.forEach(function(checkbox) {
+                                        checkbox.addEventListener("change", function() {
+                                            document.getElementById("filter-form").submit();
+                                        });
+                                    });
+                                });
+                            </script>
+                                
+                      </form>
                       <!-- select-Categories End -->
                   </div>
                   <!-- single two -->
-                  <div class="single-listing">
-                     <div class="small-section-tittle2">
-                           <h4>Job Location</h4>
-                     </div>
-                      <!-- Select job items start -->
-                      <div class="select-job-items2">
-                          <select name="select">
-                              <option value="">Anywhere</option>
-                              <option value="">Category 1</option>
-                              <option value="">Category 2</option>
-                              <option value="">Category 3</option>
-                              <option value="">Category 4</option>
-                          </select>
-                      </div>
-                      <!--  Select job items End-->
-                      <!-- select-Categories start -->
-                      <div class="select-Categories pt-80 pb-50">
-                          <div class="small-section-tittle2">
-                              <h4>Experience</h4>
-                          </div>
-                          <label class="container">1-2 Years
-                              <input type="checkbox" >
-                              <span class="checkmark"></span>
-                          </label>
-                          <label class="container">2-3 Years
-                              <input type="checkbox" checked="checked active">
-                              <span class="checkmark"></span>
-                          </label>
-                          <label class="container">3-6 Years
-                              <input type="checkbox">
-                              <span class="checkmark"></span>
-                          </label>
-                          <label class="container">6-more..
-                              <input type="checkbox">
-                              <span class="checkmark"></span>
-                          </label>
-                      </div>
-                      <!-- select-Categories End -->
-                  </div>
-                  <!-- single three -->
-                  <div class="single-listing">
-                      <!-- select-Categories start -->
-                      <div class="select-Categories pb-50">
-                          <div class="small-section-tittle2">
-                              <h4>Posted Within</h4>
-                          </div>
-                          <label class="container">Any
-                              <input type="checkbox" >
-                              <span class="checkmark"></span>
-                          </label>
-                          <label class="container">Today
-                              <input type="checkbox" checked="checked active">
-                              <span class="checkmark"></span>
-                          </label>
-                          <label class="container">Last 2 days
-                              <input type="checkbox">
-                              <span class="checkmark"></span>
-                          </label>
-                          <label class="container">Last 3 days
-                              <input type="checkbox">
-                              <span class="checkmark"></span>
-                          </label>
-                          <label class="container">Last 5 days
-                              <input type="checkbox">
-                              <span class="checkmark"></span>
-                          </label>
-                          <label class="container">Last 10 days
-                              <input type="checkbox">
-                              <span class="checkmark"></span>
-                          </label>
-                      </div>
-                      <!-- select-Categories End -->
-                  </div>
-                  <div class="single-listing">
-                      <!-- Range Slider Start -->
-                      <aside class="left_widgets p_filter_widgets price_rangs_aside sidebar_box_shadow">
-                          <div class="small-section-tittle2">
-                              <h4>Filter Jobs</h4>
-                          </div>
-                          <div class="widgets_inner">
-                              <div class="range_item">
-                                  <!-- <div id="slider-range"></div> -->
-                                  <input type="text" class="js-range-slider" value="" />
-                                  <div class="d-flex align-items-center">
-                                      <div class="price_text">
-                                          <p>Price :</p>
-                                      </div>
-                                      <div class="price_value d-flex justify-content-center">
-                                          <input type="text" class="js-input-from" id="amount" readonly />
-                                          <span>to</span>
-                                          <input type="text" class="js-input-to" id="amount" readonly />
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                      </aside>
-                    <!-- Range Slider End -->
-                  </div>
+                  
+                  
+                  
               </div>
               <!-- Job Category Listing End -->
           </div>
