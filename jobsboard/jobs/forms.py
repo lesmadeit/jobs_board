@@ -33,7 +33,7 @@ class JobForm(forms.ModelForm):
         fields = [
             'title', 'description', 'location', 'job_type',
             'salary_min', 'salary_max', 'remote', 'experience_level',
-            'is_public', 'external_apply_url', 'required_skills', 'education_experience',
+            'is_public', 'external_apply_url', 'featured', 'required_skills', 'education_experience',
             'application_deadline'
         ]
         widgets = {
@@ -46,6 +46,7 @@ class JobForm(forms.ModelForm):
             'remote': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'experience_level': forms.Select(attrs={'class': 'form-select'}),
             'is_public': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'featured': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'external_apply_url': forms.URLInput(attrs={'class': 'form-control'}),
             'required_skills': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'List skills in point form'}),
             'education_experience': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'List education and experience requirements in point form'}),

@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import user_passes_test
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Job, CompanyProfile, Application, JOB_TYPE_CHOICES, EXPERIENCE_LEVEL_CHOICES
+from .models import Job, CompanyProfile, Application, JOB_TYPE_CHOICES, EXPERIENCE_LEVEL_CHOICES, POSTED_WITHIN_CHOICES
 from .forms import CompanyProfileForm, JobForm, ApplicationForm
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator
@@ -17,7 +17,8 @@ from django.utils.timezone import now
 
 
 def home(request):
-    return render(request, "jobs/home.html")
+    featured_jobs = Job.objects.filter(featured=True, is_public=True).order_by('-created_at')[:5]  # Limit to 5
+    return render(request, "jobs/home.html", {'featured_jobs': featured_jobs})
 
 
 def about(request):
@@ -52,14 +53,7 @@ def contact(request):
             return render(request, "jobs/contactussuccess.html")
     return render(request, "jobs/contact_us.html", {'form':sub})
 
-POSTED_WITHIN_CHOICES = [
-    ('any', 'Any'),
-    ('1', 'Today'),
-    ('2', 'Last 2 days'),
-    ('3', 'Last 3 days'),
-    ('5', 'Last 5 days'),
-    ('10', 'Last 10 days'),
-]
+
 
 def job_list(request):
     jobs = Job.objects.filter(is_public=True).order_by('-created_at')
@@ -105,6 +99,10 @@ def job_list(request):
     })
 
 
+def featured_jobs(request):
+    featured_jobs = Job.objects.filter(featured=True, is_public=True).order_by('-created_at')
+    return render(request, 'jobs/featured_jobs.html', {'featured_jobs': featured_jobs})
+
 
 
 def job_detail(request, pk):
@@ -116,6 +114,7 @@ def job_detail(request, pk):
         'job': job,
     }
     return render(request, 'jobs/job_detail.html', context)
+
 
 def is_employer(user):
     return user.is_authenticated and user.profile.user_type == 'employer'

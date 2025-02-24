@@ -7,7 +7,7 @@
 <div class="slider-area ">
   <!-- Mobile Menu -->
   <div class="slider-active">
-      <div class="single-slider slider-height d-flex align-items-center" data-background="{% static 'jobs/img/hero/h1_hero' %}.jpg">
+      <div class="single-slider slider-height d-flex align-items-center" data-background="{% static 'jobs/img/hero/hero1' %}.jpg">
           <div class="container">
               <div class="row">
                   <div class="col-xl-6 col-lg-9 col-md-10">
@@ -21,6 +21,263 @@
           </div>
       </div>
   </div>
+</div>
+
+<div class="support-company-area fix section-padding2">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-xl-6 col-lg-6">
+                <div class="right-caption">
+                    <!-- Section Tittle -->
+                    <div class="section-tittle section-tittle2">
+                        <span>What we do</span>
+                        <h2>We help industry professionals get their dream jobs</h2>
+                    </div>
+                    <div class="support-caption">
+                        <p class="pera-top">Welcome to JobSphere, where we aim to connect companies looking for quailified professionals with competent, job seekers. Let us help you land your dream job.</p>
+                        <p>At JobSphere we provide a platform for recruiting companies can post available job vacancies for potential candidates to view and apply, either inside the JobSphere platform, or explore the external application option, for a redirect to the job posting company website </p>
+                        <a style="border-radius: 10px;" href="{% url 'company_profile_create' %}" class="btn post-btn">Post a job</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6 col-lg-6">
+                <div class="support-location-img">
+                    <img src="{% static 'jobs/img/service/about.jpg' %}" alt="">
+                    <div class="support-img-cap text-center">
+                        <p>Since</p>
+                        <span>2025</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Support Company End-->
+ <!-- Featured_job_start -->
+
+
+    <section class="featured-job-area feature-padding">
+        <div class="container">
+            <!-- Section Title -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-tittle text-center">
+                        <span>Recent Jobs</span>
+                        <h2>Featured Jobs</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-xl-10">
+                    {% for job in featured_jobs %}
+                    <!-- single-job-content -->
+                    <div class="single-job-items mb-30">
+                        <div class="job-items">
+                            <div class="company-img">
+                                <a href="{% url 'job_detail' job.pk %}">
+                                    <img src="{{ job.company.logo.url }}" alt="{{ job.title }}" style="width: 85px; height: 85px; object-fit: contain; border: 2px solid #ddd; border-radius: 10px; padding: 5px;">
+                                </a>
+                            </div>
+                            <div class="job-tittle">
+                               
+                                <a href="{% url 'job_detail' job.pk %}">
+                                    <h4>{{ job.title }}</h4>
+                                </a>
+                                <ul>
+                                    <li>{{ job.company.company_name }}</li>
+                                    <li><i class="fas fa-map-marker-alt"></i> {{ job.location }}</li>
+                                    <li>Ksh {{ job.salary_min }} - {{ job.salary_max }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="items-link f-right">
+                            <a href="{% url 'job_detail' job.id %}">{{ job.get_job_type_display }}</a>
+                            <span>{{ job.created_at|timesince }} ago</span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-center">No featured jobs available.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+
+
+<!-- Featured_job_end -->
+<!-- How  Apply Process Start-->
+<div class="apply-process-area apply-bg pt-150 pb-150" data-background="{% static 'jobs/img/gallery/how-applybg.png' %}">
+    <div class="container">
+        <!-- Section Tittle -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-tittle white-text text-center">
+                    <span>Application Process</span>
+                    <h2> How it works</h2>
+                </div>
+            </div>
+        </div>
+        <!-- Apply Process Caption -->
+        <div class="row">
+            <div class="col-lg-4 col-md-6">
+                <div class="single-process text-center mb-30">
+                    <div class="process-ion">
+                      <img src="{% static 'jobs/img/registration2.png' %}" alt="Registration Icon" width="60" height="60">
+                    </div>
+                    <div class="process-cap">
+                        <h5><a href="{% url 'register' %}">1. Register</a></h5>
+                    <p>Register as a candidate to get started with the job search process and access all candidate features.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="single-process text-center mb-30">
+                    <div class="process-ion">
+                        <span class="flaticon-search"></span>
+                    </div>
+                    <div class="process-cap">
+                        <h5>2. Search and Apply for job</h5>
+                    <p>Search and Apply for jobs that match your qualifications.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="single-process text-center mb-30">
+                    <div class="process-ion">
+                        <span class="flaticon-tour"></span>
+                    </div>
+                    <div class="process-cap">
+                        <h5>3. Get your job</h5>
+                    <p>Recruiters will reach out to you with feedback regarding your application.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- How  Apply Process End-->
+<!-- Testimonial Start -->
+<div class="testimonial-area testimonial-padding">
+    <div class="container">
+        <!-- Testimonial contents -->
+        <div class="row d-flex justify-content-center">
+            <div class="col-xl-8 col-lg-8 col-md-10">
+                <div class="h1-testimonial-active dot-style">
+                    <!-- Single Testimonial -->
+                    <div class="single-testimonial text-center">
+                        <!-- Testimonial Content -->
+                        <div class="testimonial-caption ">
+                            <!-- founder -->
+                            <div class="testimonial-founder  ">
+                                <div class="founder-img mb-30">
+                                    <img src="{% static 'jobs/img/testmonial/testimonial-founder.png' %}" alt="">
+                                    <span>Margaret Lawson</span>
+                                    <p>Creative Director</p>
+                                </div>
+                            </div>
+                            <div class="testimonial-top-cap">
+                                <p>“I am at an age where I just want to be fit and healthy our bodies are our responsibility! So start caring for your body and it will care for you. Eat clean it will care for you and workout hard.”</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Single Testimonial -->
+                    <div class="single-testimonial text-center">
+                        <!-- Testimonial Content -->
+                        <div class="testimonial-caption ">
+                            <!-- founder -->
+                            <div class="testimonial-founder  ">
+                                <div class="founder-img mb-30">
+                                    <img src="{% static 'jobs/img/testmonial/testimonial-founder.png' %}" alt="">
+                                    <span>Margaret Lawson</span>
+                                    <p>Creative Director</p>
+                                </div>
+                            </div>
+                            <div class="testimonial-top-cap">
+                                <p>“I am at an age where I just want to be fit and healthy our bodies are our responsibility! So start caring for your body and it will care for you. Eat clean it will care for you and workout hard.”</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Single Testimonial -->
+                    <div class="single-testimonial text-center">
+                        <!-- Testimonial Content -->
+                        <div class="testimonial-caption ">
+                            <!-- founder -->
+                            <div class="testimonial-founder  ">
+                                <div class="founder-img mb-30">
+                                    <img src="{% static 'jobs/img/testmonial/testimonial-founder.png' %}" alt="">
+                                    <span>Margaret Lawson</span>
+                                    <p>Creative Director</p>
+                                </div>
+                            </div>
+                            <div class="testimonial-top-cap">
+                                <p>“I am at an age where I just want to be fit and healthy our bodies are our responsibility! So start caring for your body and it will care for you. Eat clean it will care for you and workout hard.”</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Testimonial End -->
+
+
+<!-- Blog Area Start -->
+<div class="home-blog-area blog-h-padding">
+    <div class="container">
+        <!-- Section Tittle -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-tittle text-center">
+                    <span>Our latest blog</span>
+                    <h2>Our recent news</h2>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-6">
+                <div class="home-blog-single mb-30">
+                    <div class="blog-img-cap">
+                        <div class="blog-img">
+                            <img src="{% static 'jobs/img/blog/home-blog1.jpg' %}" alt="">
+                            <!-- Blog date -->
+                            <div class="blog-date text-center">
+                                <span>24</span>
+                                <p>Now</p>
+                            </div>
+                        </div>
+                        <div class="blog-cap">
+                            <p>|   Properties</p>
+                            <h3><a href="single-blog.html">Footprints in Time is perfect House in Kurashiki</a></h3>
+                            <a href="#" class="more-btn">Read more »</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6">
+                <div class="home-blog-single mb-30">
+                    <div class="blog-img-cap">
+                        <div class="blog-img">
+                            <img src="{% static 'jobs/img/blog/home-blog2.jpg' %}" alt="">
+                            <!-- Blog date -->
+                            <div class="blog-date text-center">
+                                <span>24</span>
+                                <p>Now</p>
+                            </div>
+                        </div>
+                        <div class="blog-cap">
+                            <p>|   Properties</p>
+                            <h3><a href="single-blog.html">Footprints in Time is perfect House in Kurashiki</a></h3>
+                            <a href="#" class="more-btn">Read more »</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
   

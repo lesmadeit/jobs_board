@@ -18,6 +18,15 @@ EXPERIENCE_LEVEL_CHOICES = (
     ('senior', 'Senior'),
 )
 
+POSTED_WITHIN_CHOICES = (
+    ('any', 'Any'),
+    ('1', 'Today'),
+    ('2', 'Last 2 days'),
+    ('3', 'Last 3 days'),
+    ('5', 'Last 5 days'),
+    ('10', 'Last 10 days'),
+)
+
 class CompanyProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='company_profile')
     company_name = models.CharField(max_length=255)
@@ -51,6 +60,7 @@ class Job(models.Model):
     is_public = models.BooleanField(default=True)
     external_apply_url = models.URLField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    featured = models.BooleanField(default=False)
 
     required_skills = models.TextField(help_text="Enter skills in point form", blank=True)
     education_experience = models.TextField(help_text="Enter educational and experience requirements", blank=True)
