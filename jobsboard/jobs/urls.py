@@ -21,5 +21,7 @@ urlpatterns = [
     path('company/create/', views.company_profile_create, name='company_profile_create'),
     path('company/edit/', views.company_profile_update, name='company_profile_update'),
     path('company/profile/', views.company_profile_view, name='company_profile_view'),
+    path('add-testimonial/', views.add_testimonial, name='add_testimonial'),
+    path('testimonials/', views.testimonial_list, name='testimonial_list'),
 
 ]

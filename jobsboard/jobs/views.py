@@ -7,8 +7,8 @@ from django.contrib.auth.decorators import user_passes_test
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Job, CompanyProfile, Application, JOB_TYPE_CHOICES, EXPERIENCE_LEVEL_CHOICES, POSTED_WITHIN_CHOICES
-from .forms import CompanyProfileForm, JobForm, ApplicationForm
+from .models import Job, CompanyProfile, Application, Testimonial, JOB_TYPE_CHOICES, EXPERIENCE_LEVEL_CHOICES, POSTED_WITHIN_CHOICES
+from .forms import CompanyProfileForm, JobForm, ApplicationForm, TestimonialForm
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator
 from datetime import timedelta
@@ -16,9 +16,16 @@ from django.utils.timezone import now
 
 
 
+
 def home(request):
     featured_jobs = Job.objects.filter(featured=True, is_public=True).order_by('-created_at')[:5]  # Limit to 5
-    return render(request, "jobs/home.html", {'featured_jobs': featured_jobs})
+    testimonials = Testimonial.objects.all()
+    context ={
+        'featured_jobs': featured_jobs,
+        'testimonials': testimonials
+
+    }
+    return render(request, "jobs/home.html", context)
 
 
 def about(request):
@@ -259,3 +266,20 @@ def company_profile_view(request):
     profile = get_object_or_404(CompanyProfile, user=request.user)
     
     return render(request, 'jobs/view_company_profile.html', {'profile': profile})
+
+
+def add_testimonial(request):
+    if request.method == 'POST':
+        form = TestimonialForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('/')
+    else:
+        form = TestimonialForm()
+    return render(request, 'jobs/add_testimonial.html', {'form': form})
+
+
+def testimonial_list(request):
+    testimonials = Testimonial.objects.all()
+    return render(request, 'jobs/testimonial_list.html', {'testimonials': testimonials})
+

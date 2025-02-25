@@ -77,7 +77,7 @@
                         <div class="menu-wrapper">
                             <!-- Main-menu -->
                             <div class="main-menu">
-                                <nav>
+                                <nav class="d-none d-lg-block">
                                     <ul id="navigation">
                                         <li><a href="/">Home</a></li>
                                         <li><a href="{% url 'jobs' %}">Jobs</a></li>
@@ -92,20 +92,25 @@
                                                     {% if user.profile.user_type == "employer" %}
                                                         <li><a href="{% url 'company_profile_create' %}">Company Profile</a></li>
                                                         <li><a href="{% url 'job_create' %}">Create Job</a></li>
+                                                        <li><a href="{% url 'add_testimonial' %}">Add Testimonial</a></li>
+                                                        <li><a href="{% url 'testimonial_list' %}">Testimonial List</a></li>
+                                
                                                     {% endif %}
                                                 </ul>
                                             </li>
-                                            <li><a href="{% url 'logout' %}">Logout</a></li>
+                                        <li><a href="{% url 'logout' %}">Logout</a></li>
+                                            
                                         {% else %}
                                             <li><a href="{% url 'register' %}">Register</a></li>
                                             <li><a href="{% url 'login' %}">Login</a></li>
                                         {% endif %}
 
+                                        
                                     </ul>
                                 </nav>
                             </div>
     
-                           
+                            
                         </div>
                     </div>
     

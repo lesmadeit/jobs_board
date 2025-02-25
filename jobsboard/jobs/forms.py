@@ -1,6 +1,6 @@
 from django import forms
 from .models import *
-from .models import CompanyProfile, Job, Application
+from .models import CompanyProfile, Job, Application, Testimonial
 
 
 
@@ -69,6 +69,16 @@ class ApplicationForm(forms.ModelForm):
 
 
 
+class TestimonialForm(forms.ModelForm):
+    class Meta:
+        model = Testimonial
+        fields = ['name', 'title', 'message', 'image']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your name'}),
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your title'}),
+            'message': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Write your testimonial here'}),
+            'image': forms.FileInput(attrs={'class': 'form-control'}),
+        }
 
 
 
