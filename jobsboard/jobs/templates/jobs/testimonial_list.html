@@ -4,28 +4,28 @@
 {% block content %}
 <div class="testimonial-area testimonial-padding">
     <div class="container">
-        <!-- Testimonial contents -->
         <div class="row d-flex justify-content-center">
             <div class="col-xl-8 col-lg-8 col-md-10">
                 <div class="h1-testimonial-active dot-style">
                     {% for testimonial in testimonials %}
-                    <!-- Single Testimonial -->
                     <div class="single-testimonial text-center">
-                        <!-- Testimonial Content -->
                         <div class="testimonial-caption">
-                            <!-- founder -->
                             <div class="testimonial-founder">
                                 <div class="founder-img mb-30">
                                     {% if testimonial.image %}
                                     <img src="{{ testimonial.image.url }}" alt="{{ testimonial.name }}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;">
-                                    
                                     {% endif %}
+                                    
                                     <span>{{ testimonial.name }}</span>
                                     <p>{{ testimonial.title }}</p>
                                 </div>
                             </div>
                             <div class="testimonial-top-cap">
                                 <p style="font-size: medium;">{{ testimonial.message }}</p>
+                            </div>
+                            <div class="mt-3">
+                                <a href="{% url 'edit_testimonial' testimonial.pk %}" class="btn btn-sm" style="border-radius: 5px;">Edit</a>
+                                <a href="{% url 'delete_testimonial' testimonial.pk %}" class="btn btn-sm" style="border-radius: 5px;">Delete</a>
                             </div>
                         </div>
                     </div>

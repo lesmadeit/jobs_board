@@ -27,6 +27,15 @@ POSTED_WITHIN_CHOICES = (
     ('10', 'Last 10 days'),
 )
 
+INDUSTRY_CHOICES = (
+    ('tech', 'Technology'),
+    ('engineering', 'Engineering'),
+    ('medicine', 'Medicine'),
+    ('construction', 'Construction'),
+    ('manufacturing', 'Manufacturing'),
+    ('law', 'Law'),
+)
+
 class CompanyProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='company_profile')
     company_name = models.CharField(max_length=255)
@@ -51,6 +60,7 @@ class Job(models.Model):
     )
     title = models.CharField(max_length=255)
     description = models.TextField()
+    industry = models.CharField(max_length=50, choices=INDUSTRY_CHOICES)
     location = models.CharField(max_length=255)
     job_type = models.CharField(max_length=50, choices=JOB_TYPE_CHOICES)
     salary_min = models.PositiveIntegerField( null=True, blank=True)
@@ -93,8 +103,64 @@ class Testimonial(models.Model):
     message = models.TextField()
     image = models.ImageField(upload_to='testimonials/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    company = models.ForeignKey('CompanyProfile', on_delete=models.CASCADE, related_name='testimonials', null=True, blank=True)
 
     def __str__(self):
         return self.name
+    
+
+class BlogCategory(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    class Meta:
+        verbose_name_plural = "Categories"
+
+    def __str__(self):
+        return self.name
+    
+
+
+class BlogPost(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts')
+    title = models.CharField(max_length=255)
+    content = models.TextField()
+    category = models.ForeignKey(BlogCategory, on_delete=models.SET_NULL, null=True)
+    image = models.ImageField(upload_to='blog_images/', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+    
+
+class BlogReply(models.Model):
+    blog_post = models.ForeignKey(BlogPost, on_delete=models.CASCADE, related_name='replies')
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name_plural = "Replies"
+
+    def __str__(self):
+        return f"Reply by {self.author.username} on {self.blog_post.title}"
+    
+
+
+class BlogLike(models.Model):
+    blog_post = models.ForeignKey(BlogPost, on_delete=models.CASCADE, related_name='likes')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('blog_post', 'user')  # Prevents duplicate likes
+
+    def __str__(self):
+        return f"{self.user.username} likes {self.blog_post.title}"
+    
+
+
+
+
 
 

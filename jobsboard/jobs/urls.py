@@ -8,8 +8,7 @@ urlpatterns = [
     path("about/", views.about, name="about"),
     path("services/", views.services, name="services"),
     path("service-details/", views.service_details, name="service-details"),
-    path("blog/", views.blog, name="blog"),
-    path("blog-details/", views.blog_details, name="blog-details"),
+    
     path("contact/", views.contact, name="contact"),
     path("jobs/", views.job_list, name="jobs"),
     path('featured-jobs/', views.featured_jobs, name='featured_jobs'),
@@ -23,5 +22,11 @@ urlpatterns = [
     path('company/profile/', views.company_profile_view, name='company_profile_view'),
     path('add-testimonial/', views.add_testimonial, name='add_testimonial'),
     path('testimonials/', views.testimonial_list, name='testimonial_list'),
+    path('edit-testimonial/<int:pk>/', views.edit_testimonial, name='edit_testimonial'),
+    path('delete-testimonial/<int:pk>/', views.delete_testimonial, name='delete_testimonial'),
+    path('blog/', views.blog_list, name='blog_list'),
+    path('blog/<int:blog_id>/', views.blog_detail, name='blog_detail'),
+    path('blog/reply/<int:blog_id>/', views.add_reply, name='add_reply'),
+    path('blog/like/<int:blog_id>/', views.toggle_like, name='toggle_like'),
 
 ]

@@ -31,7 +31,7 @@ class JobForm(forms.ModelForm):
     class Meta:
         model = Job
         fields = [
-            'title', 'description', 'location', 'job_type',
+            'title', 'description', 'industry', 'location', 'job_type',
             'salary_min', 'salary_max', 'remote', 'experience_level',
             'is_public', 'external_apply_url', 'featured', 'required_skills', 'education_experience',
             'application_deadline'
@@ -39,6 +39,7 @@ class JobForm(forms.ModelForm):
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'industry': forms.Select(attrs={'class': 'form-select'}),
             'location': forms.TextInput(attrs={'class': 'form-control'}),
             'job_type': forms.Select(attrs={'class': 'form-select'}),
             'salary_min': forms.NumberInput(attrs={'class': 'form-control'}),

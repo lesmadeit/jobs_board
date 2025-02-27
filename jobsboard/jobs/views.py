@@ -7,12 +7,14 @@ from django.contrib.auth.decorators import user_passes_test
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Job, CompanyProfile, Application, Testimonial, JOB_TYPE_CHOICES, EXPERIENCE_LEVEL_CHOICES, POSTED_WITHIN_CHOICES
+from .models import Job, CompanyProfile, Application, Testimonial, JOB_TYPE_CHOICES, EXPERIENCE_LEVEL_CHOICES, POSTED_WITHIN_CHOICES, INDUSTRY_CHOICES
 from .forms import CompanyProfileForm, JobForm, ApplicationForm, TestimonialForm
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator
 from datetime import timedelta
 from django.utils.timezone import now
+from django.http import Http404
+from .models import BlogPost, BlogReply, BlogLike, BlogCategory
 
 
 
@@ -40,12 +42,7 @@ def service_details(request):
     return render(request, "jobs/service_details.html")
 
 
-def blog(request):
-    return render(request, "jobs/blog.html")
 
-
-def blog_details(request):
-    return render(request, "jobs/blog_details.html")
 
 
 def contact(request):
@@ -85,6 +82,11 @@ def job_list(request):
     if location:
         jobs = jobs.filter(location__icontains=location)
 
+
+    industry = request.GET.get('industry')
+    if industry and industry != 'all':  # 'all' represents "All Category"
+        jobs = jobs.filter(industry=industry)
+
     # Filter by "posted within"
     posted_within = request.GET.get('posted_within', 'any')  # Default to "any"
     if posted_within.isdigit():  # Ensure it's a valid number
@@ -103,6 +105,8 @@ def job_list(request):
         'selected_experience_levels': experience_level,
         'posted_within_choices': POSTED_WITHIN_CHOICES,
         'selected_posted_within': posted_within,
+        'industry_choices': INDUSTRY_CHOICES,  
+        'selected_industry': industry or 'all', # Default to 'all' if no industry selected
     })
 
 
@@ -268,18 +272,126 @@ def company_profile_view(request):
     return render(request, 'jobs/view_company_profile.html', {'profile': profile})
 
 
+
+@login_required
+@user_passes_test(is_employer)
 def add_testimonial(request):
+    if not hasattr(request.user, 'company_profile') or request.user.profile.user_type != 'employer':
+        return redirect('home')  # Redirect non-employers
     if request.method == 'POST':
         form = TestimonialForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            return redirect('/')
+            testimonial = form.save(commit=False)
+            testimonial.company = request.user.company_profile  # Link to the employer’s company profile
+            testimonial.save()
+            return redirect('testimonial_list')
     else:
         form = TestimonialForm()
     return render(request, 'jobs/add_testimonial.html', {'form': form})
 
+@login_required
+@user_passes_test(is_employer)
+def edit_testimonial(request, pk):
+    if not hasattr(request.user, 'company_profile') or request.user.profile.user_type != 'employer':
+        raise Http404
+    testimonial = get_object_or_404(Testimonial, pk=pk, company=request.user.company_profile)
+    if request.method == 'POST':
+        form = TestimonialForm(request.POST, request.FILES, instance=testimonial)
+        if form.is_valid():
+            form.save()
+            return redirect('testimonial_list')
 
+
+@login_required
+@user_passes_test(is_employer)
+def delete_testimonial(request, pk):
+    if not hasattr(request.user, 'company_profile') or request.user.profile.user_type != 'employer':
+        raise Http404
+    testimonial = get_object_or_404(Testimonial, pk=pk, company=request.user.company_profile)
+    if request.method == 'POST':
+        testimonial.delete()
+        return redirect('testimonial_list')
+    return render(request, 'jobs/delete_testimonial.html', {'testimonial': testimonial})
+
+
+@login_required
+@user_passes_test(is_employer)
 def testimonial_list(request):
-    testimonials = Testimonial.objects.all()
+    if request.user.is_authenticated and hasattr(request.user, 'company_profile') and request.user.profile.user_type == 'employer':
+        testimonials = Testimonial.objects.filter(company=request.user.company_profile).order_by('-created_at')
+    else:
+        testimonials = Testimonial.objects.all().order_by('-created_at')
     return render(request, 'jobs/testimonial_list.html', {'testimonials': testimonials})
+
+
+
+
+def blog_list(request):
+    blog_posts = BlogPost.objects.all().order_by('-created_at')
+
+    # Search filter
+    query = request.GET.get('q')
+    if query:
+        blog_posts = blog_posts.filter(title__icontains=query) | blog_posts.filter(content__icontains=query)
+
+    # Category filter
+    category = request.GET.get('category')
+    if category:
+        blog_posts = blog_posts.filter(category__name=category)
+
+    paginator = Paginator(blog_posts, 5)  # 5 posts per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+
+    categories = BlogCategory.objects.all()
+    recent_posts = BlogPost.objects.order_by('-created_at')[:4]
+
+    return render(request, 'jobs/blog_list.html', {
+        'page_obj': page_obj,
+        'categories': categories,
+        'recent_posts': recent_posts,
+    })
+
+def blog_detail(request, blog_id):
+    blog_post = get_object_or_404(BlogPost, id=blog_id)
+
+    # Previous and next posts
+    previous_post = BlogPost.objects.filter(created_at__lt=blog_post.created_at).order_by('-created_at').first()
+    next_post = BlogPost.objects.filter(created_at__gt=blog_post.created_at).order_by('created_at').first()
+
+    # Sidebar data
+    categories = BlogCategory.objects.all()
+    recent_posts = BlogPost.objects.order_by('-created_at')[:4]
+
+    context = {
+        'blog_post': blog_post,
+        'previous_post': previous_post,
+        'next_post': next_post,
+        'categories': categories,
+        'recent_posts': recent_posts,
+    }
+    return render(request, 'jobs/blog_details.html', context)
+
+
+@login_required
+def add_reply(request, blog_id):
+    blog_post = get_object_or_404(BlogPost, id=blog_id)
+    if request.method == 'POST':
+        content = request.POST.get('comment')
+        if content:
+            BlogReply.objects.create(blog_post=blog_post, author=request.user, content=content)
+    return redirect('blog_detail', blog_id=blog_id)
+
+
+
+@login_required
+def toggle_like(request, blog_id):
+    blog_post = get_object_or_404(BlogPost, id=blog_id)
+    like, created = BlogLike.objects.get_or_create(blog_post=blog_post, user=request.user)
+    if not created:  # If like exists, remove it
+        like.delete()
+    return redirect('blog_detail', blog_id=blog_id)
+
+
 
