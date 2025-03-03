@@ -27,6 +27,8 @@ urlpatterns = [
     path('blog/', views.blog_list, name='blog_list'),
     path('blog/<int:blog_id>/', views.blog_detail, name='blog_detail'),
     path('blog/reply/<int:blog_id>/', views.add_reply, name='add_reply'),
+    path('blog/reply/<int:blog_id>/<int:parent_id>/', views.add_reply, name='add_reply'),
+    path('blog/delete-reply/<int:blog_id>/<int:reply_id>/', views.delete_reply, name='delete_reply'),
     path('blog/like/<int:blog_id>/', views.toggle_like, name='toggle_like'),
 
 ]

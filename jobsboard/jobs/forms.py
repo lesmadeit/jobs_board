@@ -6,10 +6,50 @@ from .models import CompanyProfile, Job, Application, Testimonial
 
 
 
+
+
 class ContactusForm(forms.Form):
-    Name = forms.CharField(max_length=30)
-    Email = forms.EmailField()
-    Message = forms.CharField(max_length=500, widget=forms.Textarea(attrs={'rows': 3, 'cols': 30}))
+    Name = forms.CharField(
+        max_length=30,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control valid',
+            'id': 'name',
+            'placeholder': 'Enter your name',
+            'onfocus': "this.placeholder = ''",
+            'onblur': "this.placeholder = 'Enter your name'"
+        })
+    )
+    Email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control valid',
+            'id': 'email',
+            'placeholder': 'Enter email address',
+            'onfocus': "this.placeholder = ''",
+            'onblur': "this.placeholder = 'Enter email address'"
+        })
+    )
+    Subject = forms.CharField(
+    max_length=100,
+    widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'id': 'subject',
+        'placeholder': 'Enter Subject',
+        'onfocus': "this.placeholder = ''",
+        'onblur': "this.placeholder = 'Enter Subject'"
+    })
+    )
+    Message = forms.CharField(
+        max_length=500,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control w-100',
+            'id': 'message',
+            'rows': 9,
+            'cols': 30,
+            'placeholder': 'Enter Message',
+            'onfocus': "this.placeholder = ''",
+            'onblur': "this.placeholder = 'Enter Message'"
+        })
+    )
 
 
 class CompanyProfileForm(forms.ModelForm):

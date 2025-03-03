@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<!-- Hero Area Start-->
+<!-- Hero Area Start -->
 <div class="slider-area ">
     <div class="single-slider section-overly slider-height2 d-flex align-items-center" data-background="{% static 'jobs/img/hero/her.jpg' %}">
         <div class="container">
@@ -15,8 +15,9 @@
             </div>
         </div>
     </div>
- </div>
- <!-- Hero Area End -->
+</div>
+<!-- Hero Area End -->
+
 <!-- Blog Area -->
 <section class="blog_area single-post-area section-padding">
     <div class="container">
@@ -33,12 +34,11 @@
                     <div class="blog_details">
                         <h2>{{ blog_post.title }}</h2>
                         <ul class="blog-info-link mt-3 mb-4">
-                            <li><a href="#"><i class="fa fa-user"></i> {{ blog_post.category.name }}</a></li>
+                            <li><a href="{% url 'blog_list' %}?category={{ blog_post.category.name|urlencode }}"><i class="fa fa-user"></i> {{ blog_post.category.name }}</a></li>
                             <li><a href="#"><i class="fa fa-comments"></i> {{ blog_post.replies.count }} Comments</a></li>
                         </ul>
                         <p class="excert">{{ blog_post.content|truncatewords:50 }}</p>
                         <p>{{ blog_post.content }}</p>
-                        <!-- Optional quote section; adjust as needed -->
                         <div class="quote-wrapper">
                             <div class="quotes">
                                 {{ blog_post.content|truncatewords:30 }}
@@ -74,7 +74,6 @@
                                     <a href="{% url 'blog_detail' previous_post.id %}">
                                         {% if previous_post.image %}
                                             <img style="width: 60px; height: 60px;" class="img-fluid" src="{{ previous_post.image.url }}" alt="{{ previous_post.title }}">
-
                                         {% endif %}
                                     </a>
                                 </div>
@@ -129,31 +128,83 @@
                     </div>
                 </div>
 
+                <!-- Comments Area with Nested Replies and Delete -->
                 <div class="comments-area">
                     <h4>{{ blog_post.replies.count }} Comments</h4>
                     {% for reply in blog_post.replies.all %}
-                    <div class="comment-list">
-                        <div class="single-comment justify-content-between d-flex">
-                            <div class="user justify-content-between d-flex">
-                                <div class="thumb">
-                                    <img src="{{ reply.author.profile.avatar.url }}" alt="{{ reply.author.username }}" style="width: 50px; height: 50px; border-radius: 50%;">
-                                </div>
-                                <div class="desc">
-                                    <p class="comment">{{ reply.content }}</p>
-                                    <div class="d-flex justify-content-between">
-                                        <div class="d-flex align-items-center">
-                                            <h5><a href="#">{{ reply.author.username }}</a></h5>
-                                            <p class="date">{{ reply.created_at|date:"F d, Y \a\t h:i A" }}</p>
+                        {% if not reply.parent %}
+                            <div class="comment-list" style="margin-left: 0;">
+                                <div class="single-comment justify-content-between d-flex">
+                                    <div class="user justify-content-between d-flex">
+                                        <div class="thumb">
+                                            <img src="{{ reply.author.profile.avatar.url }}" alt="{{ reply.author.username }}" style="width: 50px; height: 50px; border-radius: 50%;">
                                         </div>
-                                        <!-- Optional reply-to-reply link -->
-                                        <div class="reply-btn">
-                                            <a href="#" class="btn-reply text-uppercase">reply</a>
+                                        <div class="desc">
+                                            <p class="comment">{{ reply.content }}</p>
+                                            <div class="d-flex justify-content-between">
+                                                <div class="d-flex align-items-center">
+                                                    <h5><a href="#">{{ reply.author.username }}</a></h5>
+                                                    <p class="date">{{ reply.created_at|date:"F d, Y \a\t h:i A" }}</p>
+                                                </div>
+                                                <div class="reply-btn">
+                                                    <a href="#" class="btn-reply text-uppercase" data-toggle="collapse" data-target="#reply-form-{{ reply.id }}">Reply</a>
+                                                    {% if user.is_authenticated and reply.author == user %}
+                                                        <a href="{% url 'delete_reply' blog_post.id reply.id %}" class="btn-reply text-uppercase ml-2" style="color: red;">Delete</a>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <!-- Nested Reply Form -->
+                                            <div id="reply-form-{{ reply.id }}" class="collapse mt-3">
+                                                <form action="{% url 'add_reply' blog_post.id reply.id %}" method="post">
+                                                    {% csrf_token %}
+                                                    <div class="form-group">
+                                                        <textarea class="form-control w-100" name="comment" rows="3" placeholder="Write your reply..." required></textarea>
+                                                    </div>
+                                                    <button style="border-radius: 5px;" type="submit" class="btn btn-primary">Reply</button>
+                                                </form>
+                                            </div>
+                                            <!-- Nested Replies -->
+                                            {% for child in reply.get_replies %}
+                                                <div class="comment-list" style="margin-left: 50px;">
+                                                    <div class="single-comment justify-content-between d-flex">
+                                                        <div class="user justify-content-between d-flex">
+                                                            <div class="thumb">
+                                                                <img src="{{ child.author.profile.avatar.url }}" alt="{{ child.author.username }}" style="width: 40px; height: 40px; border-radius: 50%;">
+                                                            </div>
+                                                            <div class="desc">
+                                                                <p class="comment">{{ child.content }}</p>
+                                                                <div class="d-flex justify-content-between">
+                                                                    <div class="d-flex align-items-center">
+                                                                        <h5><a href="#">{{ child.author.username }}</a></h5>
+                                                                        <p class="date">{{ child.created_at|date:"F d, Y \a\t h:i A" }}</p>
+                                                                    </div>
+                                                                    <div class="reply-btn">
+                                                                        <a href="#" class="btn-reply text-uppercase" data-toggle="collapse" data-target="#reply-form-{{ child.id }}">Reply</a>
+                                                                        {% if user.is_authenticated and child.author == user %}
+                                                                            <a href="{% url 'delete_reply' blog_post.id child.id %}" class="btn-reply text-uppercase ml-2" style="color: red;">Delete</a>
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </div>
+                                                                <!-- Nested Reply Form for Child -->
+                                                                <div id="reply-form-{{ child.id }}" class="collapse mt-3">
+                                                                    <form action="{% url 'add_reply' blog_post.id child.id %}" method="post">
+                                                                        {% csrf_token %}
+                                                                        <div class="form-group">
+                                                                            <textarea class="form-control w-100" name="comment" rows="3" placeholder="Write your reply..." required></textarea>
+                                                                        </div>
+                                                                        <button style="border-radius: 5px;" type="submit" class="btn btn-primary">Reply</button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        {% endif %}
                     {% empty %}
                         <p>No comments yet.</p>
                     {% endfor %}
@@ -219,7 +270,7 @@
                             {% if recent_post.image %}
                                 <img src="{{ recent_post.image.url }}" alt="{{ recent_post.title }}" style="width: 90px; height: auto;">
                             {% else %}
-                                
+                                <img src="{% static 'jobs/img/blog/default_post.png' %}" alt="Default" style="width: 90px; height: auto;">
                             {% endif %}
                             <div class="media-body">
                                 <a href="{% url 'blog_detail' recent_post.id %}">
@@ -232,19 +283,7 @@
                             <p>No recent posts.</p>
                         {% endfor %}
                     </aside>
-                    <aside class="single_sidebar_widget tag_cloud_widget">
-                        <h4 class="widget_title">Tag Clouds</h4>
-                        <ul class="list">
-                            <li><a href="#">project</a></li>
-                            <li><a href="#">love</a></li>
-                            <li><a href="#">technology</a></li>
-                            <li><a href="#">travel</a></li>
-                            <li><a href="#">restaurant</a></li>
-                            <li><a href="#">lifestyle</a></li>
-                            <li><a href="#">design</a></li>
-                            <li><a href="#">illustration</a></li>
-                        </ul>
-                    </aside>
+                    
                 </div>
             </div>
         </div>

@@ -1,87 +1,81 @@
 {% extends 'jobs/base.html' %}
+{% load static %}
 
 {% block content %}
-
 <br><br><br><br>
-<!-- Contact Section -->
-    <section id="contact" class="contact section">
-
-        <!-- Section Title -->
-        <div class="container section-title" data-aos="fade-up">
-          <h2>Contact</h2>
-          <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
-        </div><!-- End Section Title -->
-  
-        <div class="container" data-aos="fade-up" data-aos-delay="100">
-  
-          <div class="row gx-lg-0 gy-4">
-  
-            <div class="col-lg-4">
-              <div class="info-container d-flex flex-column align-items-center justify-content-center">
-                <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="200">
-                  <i class="bi bi-geo-alt flex-shrink-0"></i>
-                  <div>
-                    <h3>Address</h3>
-                    <p>Nairobi</p>
-                  </div>
-                </div><!-- End Info Item -->
-  
-                <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
-                  <i class="bi bi-telephone flex-shrink-0"></i>
-                  <div>
-                    <h3>Call Us</h3>
-                    <p>+254712345678</p>
-                  </div>
-                </div><!-- End Info Item -->
-  
-                <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="400">
-                  <i class="bi bi-envelope flex-shrink-0"></i>
-                  <div>
-                    <h3>Email Us</h3>
-                    <p>lesliemwendwa10@gmail.com</p>
-                  </div>
-                </div><!-- End Info Item -->
-  
-                
-  
-              </div>
-  
+<section class="contact-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="contact-title">Get in Touch</h2>
             </div>
-  
             <div class="col-lg-8">
-              <form method="POST" action="{% url 'contact' %}" class="php-email-form" data-aos="fade" data-aos-delay="100">
-                <!-- Django CSRF Token -->
-                 {% csrf_token %}
-                <div class="row gy-4">
-  
-                  <div class="col-md-6">
-                    <input type="text" name="{{ form.Name.name }}" class="form-control" placeholder="Your Name" required="">
-                  </div>
-  
-                  <div class="col-md-6 ">
-                    <input type="email" class="form-control" name="{{ form.Email.name }}" placeholder="Your Email" required="">
-                  </div>
-  
-                  <!--<div class="col-md-12">
-                    <input type="text" class="form-control" name="subject" placeholder="Subject" required="">
-                  </div>-->
-  
-                  <div class="col-md-12">
-                    <textarea class="form-control" name="{{ form.Message.name }}" rows="8" placeholder="Message" required="{{ form.message.id_for_label }}"></textarea>
-                  </div>
-  
-                  <div class="col-md-12 text-center">
-                    <button type="submit">Send Message</button>
-                  </div>
-  
+                <form class="form-contact contact_form" action="{% url 'contact' %}" method="post" id="contactForm" novalidate="novalidate">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                {{ form.Name }}
+                                {% if form.Name.errors %}
+                                    <div class="text-danger">{{ form.Name.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                {{ form.Email }}
+                                {% if form.Email.errors %}
+                                    <div class="text-danger">{{ form.Email.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                {{ form.Subject }}
+                                {% if form.Subject.errors %}
+                                    <div class="text-danger">{{ form.Subject.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                {{ form.Message }}
+                                {% if form.Message.errors %}
+                                    <div class="text-danger">{{ form.Message.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mt-3">
+                        <button type="submit" class="button button-contactForm boxed-btn">Send</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-3 offset-lg-1">
+                <div class="media contact-info">
+                    <span class="contact-info__icon"><i class="ti-home"></i></span>
+                    <div class="media-body">
+                        <h3>Nairobi</h3>
+                        <p>CBD</p>
+                    </div>
                 </div>
-              </form>
-            </div><!-- End Contact Form -->
-  
-          </div>
-  
+                <div class="media contact-info">
+                    <span class="contact-info__icon"><i class="ti-tablet"></i></span>
+                    <div class="media-body">
+                        <h3>+254712345678</h3>
+                        
+                    </div>
+                </div>
+                <div class="media contact-info">
+                    <span class="contact-info__icon"><i class="ti-email"></i></span>
+                    <div class="media-body">
+                        <h3>lesmwendwa@gmail.com</h3>
+                        <p>Send us your query anytime!</p>
+                    </div>
+                </div>
+            </div>
         </div>
-  
-</section><!-- /Contact Section -->
-
-{% endblock content %}
+    </div>
+</section>
+<br><br><br><br>
+{% endblock %}

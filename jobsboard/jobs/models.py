@@ -138,12 +138,16 @@ class BlogReply(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
     
     class Meta:
         verbose_name_plural = "Replies"
 
     def __str__(self):
         return f"Reply by {self.author.username} on {self.blog_post.title}"
+    
+    def get_replies(self):
+        return self.children.all().order_by('created_at')
     
 
 

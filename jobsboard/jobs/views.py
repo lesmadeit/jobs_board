@@ -22,9 +22,11 @@ from .models import BlogPost, BlogReply, BlogLike, BlogCategory
 def home(request):
     featured_jobs = Job.objects.filter(featured=True, is_public=True).order_by('-created_at')[:5]  # Limit to 5
     testimonials = Testimonial.objects.all()
+    recent_blogs = BlogPost.objects.order_by('-created_at')[:2]
     context ={
         'featured_jobs': featured_jobs,
-        'testimonials': testimonials
+        'testimonials': testimonials,
+        'recent_blogs': recent_blogs,
 
     }
     return render(request, "jobs/home.html", context)
@@ -45,18 +47,27 @@ def service_details(request):
 
 
 
-def contact(request):
-    sub = forms.ContactusForm()
-    if request.method == 'POST':
-        sub = forms.ContactusForm(request.POST)
-        if sub.is_valid():
-            email = sub.cleaned_data['Email']
-            name = sub.cleaned_data['Name']
-            message = sub.cleaned_data['Message']
-            send_mail(str(name)+' || '+str(email), message,settings.EMAIL_HOST_USER, settings.EMAIL_RECEIVING_USER, fail_silently = False)
-            return render(request, "jobs/contactussuccess.html")
-    return render(request, "jobs/contact_us.html", {'form':sub})
 
+
+def contact(request):
+    if request.method == 'POST':
+        form = forms.ContactusForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['Email']
+            name = form.cleaned_data['Name']
+            message = form.cleaned_data['Message']
+            send_mail(
+                f"{name} || {email}",
+                message,
+                settings.EMAIL_HOST_USER,
+                settings.EMAIL_RECEIVING_USER,
+                fail_silently=False
+            )
+            return render(request, "jobs/contactussuccess.html")
+    else:
+        form = forms.ContactusForm()
+    
+    return render(request, "jobs/contact_us.html", {'form': form})
 
 
 def job_list(request):
@@ -375,13 +386,43 @@ def blog_detail(request, blog_id):
 
 
 @login_required
-def add_reply(request, blog_id):
+def add_reply(request, blog_id, parent_id=None):
     blog_post = get_object_or_404(BlogPost, id=blog_id)
+    parent_reply = None
+    if parent_id:
+        parent_reply = get_object_or_404(BlogReply, id=parent_id, blog_post=blog_post)
+
     if request.method == 'POST':
         content = request.POST.get('comment')
         if content:
-            BlogReply.objects.create(blog_post=blog_post, author=request.user, content=content)
-    return redirect('blog_detail', blog_id=blog_id)
+            BlogReply.objects.create(
+                blog_post=blog_post,
+                author=request.user,
+                content=content,
+                parent=parent_reply  # Set parent if replying to a reply
+            )
+        return redirect('blog_detail', blog_id=blog_id)
+
+    return redirect('blog_detail', blog_id=blog_id)  # Fallback for GET requests
+
+@login_required
+def delete_reply(request, blog_id, reply_id):
+    blog_post = get_object_or_404(BlogPost, id=blog_id)
+    reply = get_object_or_404(BlogReply, id=reply_id, blog_post=blog_post)
+    
+    # Check if the logged-in user is the author of the reply
+    if reply.author != request.user:
+        raise Http404("You are not authorized to delete this reply.")
+    
+    if request.method == 'POST':
+        reply.delete()
+        return redirect('blog_detail', blog_id=blog_id)
+    
+    # Optional: Show a confirmation page for GET requests
+    return render(request, 'jobs/delete_reply_confirm.html', {
+        'reply': reply,
+        'blog_post': blog_post,
+    })
 
 
 
