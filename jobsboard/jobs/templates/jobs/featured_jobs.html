@@ -1,0 +1,53 @@
+{% extends 'jobs/base.html' %}
+{% load static %}
+
+
+{% block content %}
+    <section class="featured-job-area feature-padding">
+        <div class="container">
+            <!-- Section Title -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-tittle text-center">
+                        <span>Recent Jobs</span>
+                        <h2>Featured Jobs</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-xl-10">
+                    {% for job in featured_jobs %}
+                    <!-- single-job-content -->
+                    <div class="single-job-items mb-30">
+                        <div class="job-items">
+                            <div class="company-img">
+                                <a href="{% url 'job_detail' job.pk %}">
+                                    <img src="{{ job.company.logo.url }}" alt="{{ job.title }}" style="width: 85px; height: 85px; object-fit: contain; border: 2px solid #ddd; border-radius: 10px; padding: 5px;">
+                                </a>
+                            </div>
+                            <div class="job-tittle">
+                               
+                                <a href="{% url 'job_detail' job.pk %}">
+                                    <h4>{{ job.title }}</h4>
+                                </a>
+                                <ul>
+                                    <li>{{ job.company.company_name }}</li>
+                                    <li><i class="fas fa-map-marker-alt"></i> {{ job.location }}</li>
+                                    <li>Ksh {{ job.salary_min }} - {{ job.salary_max }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="items-link f-right">
+                            <a href="{% url 'job_detail' job.id %}">{{ job.get_job_type_display }}</a>
+                            <span>{{ job.created_at|timesince }} ago</span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-center">No featured jobs available.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}

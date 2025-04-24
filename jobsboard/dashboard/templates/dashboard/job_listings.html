@@ -1,0 +1,70 @@
+{% extends 'dashboard/dashboard_base.html' %}
+{% load static %}
+
+{% block content %}
+<br><br>
+    <!-- Begin Page Content -->
+    <div class="container-fluid">
+        <h1 class="h3 mb-4 text-gray-800">Job Listings Management</h1>
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Your Job Listings</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="jobListingsTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Job Title</th>
+                                <th>Status</th>
+                                <th>Views</th>
+                                <th>Applicants</th>
+                                <th>Date Posted</th>
+                                <th>Expiry</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for job in job_listings %}
+                            <tr>
+                                <td>{{ job.title }}</td>
+                                <td>
+                                    <span class="badge 
+                                        {% if job.status == 'active' %}badge-success
+                                        {% elif job.status == 'expired' %}badge-danger
+                                        {% else %}badge-warning{% endif %}">
+                                        {{ job.status|capfirst }}
+                                    </span>
+                                </td>
+                                <td>{{ job.views|default:0 }}</td>
+                                <td>{{ job.applicant_count }}</td>
+                                <td>{{ job.created_at|date:"Y-m-d" }}</td>
+                                <td>{{ job.application_deadline|default:"N/A" }}</td>
+                                <td>
+                                    <a href="{% url 'dashboard:edit_job' job.id %}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <a href="{% url 'dashboard:close_job' job.id %}" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-times"></i> Close
+                                    </a>
+                                    <a href="{% url 'dashboard:applicants_management' job.id %}" class="btn btn-secondary btn-sm">
+                                        <i class="fas fa-users"></i> Applicants
+                                    </a>
+                                    <a href="{% url 'dashboard:delete_job' job.id %}" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </a>
+                                    
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center">No job listings found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.container-fluid -->
+{% endblock content %}

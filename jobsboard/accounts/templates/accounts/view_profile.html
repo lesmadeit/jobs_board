@@ -1,0 +1,33 @@
+{% extends "jobs/base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-sm border-4 rounded-4">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        {% if profile.avatar %}
+                            <img src="{{ profile.avatar.url }}" alt="Profile Image" class="rounded-circle img-fluid mb-3" style="width: 120px; height: 120px; object-fit: cover;">
+                        {% else %}
+                            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mb-3" style="width: 120px; height: 120px;">
+                                <span class="text-white" style="font-size: 48px;">{{ profile.user.username|first|upper }}</span>
+                            </div>
+                        {% endif %}
+                        <h2 class="card-title mb-1">{{ profile.user.username }}</h2>
+                        <p class="text-muted mb-0">{{ profile.user.first_name }} {{ profile.user.last_name }}</p>
+                    </div>
+                    <hr>
+                    <div class="px-3">
+                        <p><strong>Email:</strong> {{ profile.user.email }}</p>
+                        <p><strong>Bio:</strong> {{ profile.bio|default:"No bio provided." }}</p>
+                    </div>
+                    <div class="text-center mt-4">
+                        <a href="{% url 'accounts:profile_update' %}" class="btn px-4 py-3 rounded-pill">Edit Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

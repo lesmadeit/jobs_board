@@ -1,0 +1,230 @@
+{% extends 'jobs/base.html' %}
+{% load static %}
+{% block content %}
+
+
+<!-- Hero Area Start-->
+<div class="slider-area ">
+  <div class="single-slider section-overly slider-height2 d-flex align-items-center" data-background="{% static 'jobs/img/hero/hero1.jpg' %}">
+      <div class="container">
+          <div class="row">
+              <div class="col-xl-12">
+                  <div class="hero-cap text-center">
+                      <h2>Get your job</h2>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+<!-- Hero Area End -->
+<!-- Job List Area Start -->
+<div class="job-listing-area pt-120 pb-120">
+  <div class="container">
+    <h1>Job Listings</h1>
+  <form method="get" class="form-inline mb-3">
+    <input type="text" name="q" class="form-control mr-2" placeholder="Search jobs" value="{{ request.GET.q }}"><br>
+    <input type="text" name="location" class="form-control mr-2" placeholder="Location" value="{{ request.GET.location }}"><br><br><br>
+    
+    <button style="border-radius: 10px;" type="submit" class="btn btn-sm p-4">Search</button>
+  </form>
+      <div class="row">
+          <!-- Left content -->
+          <div class="col-xl-3 col-lg-3 col-md-4">
+              <div class="row">
+                  <div class="col-12">
+                          <div class="small-section-tittle2 mb-45">
+                          <div class="ion"> <svg 
+                              xmlns="http://www.w3.org/2000/svg"
+                              xmlns:xlink="http://www.w3.org/1999/xlink"
+                              width="20px" height="12px">
+                          <path fill-rule="evenodd"  fill="rgb(27, 207, 107)"
+                              d="M7.778,12.000 L12.222,12.000 L12.222,10.000 L7.778,10.000 L7.778,12.000 ZM-0.000,-0.000 L-0.000,2.000 L20.000,2.000 L20.000,-0.000 L-0.000,-0.000 ZM3.333,7.000 L16.667,7.000 L16.667,5.000 L3.333,5.000 L3.333,7.000 Z"/>
+                          </svg>
+                          </div>
+                          <h4>Filter Jobs</h4>
+                      </div>
+                  </div>
+              </div>
+              <!-- Job Category Listing start -->
+              <div class="job-category-listing mb-50">
+                  <!-- single one -->
+                  <div class="single-listing">
+                     <div class="small-section-tittle2">
+                           <h4>Industry</h4>
+                     </div>
+                      <!-- Select job items start -->
+                      <form id="filter-form" method="GET" action="{% url 'jobs:jobs' %}">
+                        <div class="select-job-items2">
+                            <select name="industry" onchange="this.form.submit()">
+                                <option value="all" {% if selected_industry == 'all' %}selected{% endif %}>All</option>
+                                {% for key, label in industry_choices %}
+                                    <option value="{{ key }}" {% if selected_industry == key %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <!--  Select job items End-->
+                        <!-- select-Categories start -->
+                      
+                      
+                        <!-- Job Type Filters -->
+                        <div class="select-Categories pt-80 pb-50">
+                            <div class="small-section-tittle2">
+                                <h4>Job Type</h4>
+                            </div>
+                            
+                                {% for key, label in job_type_choices %}
+                                    <label class="container">{{ label }}
+                                        <input type="checkbox" name="job_type" value="{{ key }}" 
+                                            {% if key in selected_job_types %}checked{% endif %}
+                                            onchange="this.form.submit()">
+                                        <span style="border-radius: 4px; border: 1px solid black;" class="checkmark"></span>
+                                    </label>
+                                {% endfor %}
+                        </div>
+                        <!-- Experience Level Filters -->
+                        <div class="select-Categories pt-80 pb-50">
+                            <div class="small-section-tittle2">
+                                <h4>Experience Level</h4>
+                            </div>
+                            {% for key, label in experience_level_choices %}
+                                <label class="container">{{ label }}
+                                    <input type="checkbox" name="experience_level" value="{{ key }}"
+                                        {% if key in selected_experience_levels %}checked{% endif %}>
+                                    <span style="border-radius: 4px; border: 1px solid black;" class="checkmark"></span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                        <div class="select-Categories pb-50">
+                            <div class="small-section-tittle2">
+                                <h4>Posted Within</h4>
+                            </div>
+                            {% for days, label in posted_within_choices %}
+                                <label class="container">{{ label }}
+                                    <input type="radio" name="posted_within" value="{{ days }}"
+                                        {% if days == selected_posted_within %}checked{% endif %}
+                                        onchange="this.form.submit()"> <!-- Auto-submit on selection -->
+                                    <span style="border-radius: 4px; border: 1px solid black;" class="checkmark"></span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                        <button id="filter-submit" type="submit" style="display: none;"></button>
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function() {
+                                let checkboxes = document.querySelectorAll("input[type=checkbox]");
+                                checkboxes.forEach(function(checkbox) {
+                                    checkbox.addEventListener("change", function() {
+                                        document.getElementById("filter-form").submit();
+                                    });
+                                });
+                            });
+                        </script>
+                                
+                      </form>
+                      <!-- select-Categories End -->
+                  </div>
+                  <!-- single two -->
+                  
+                  
+                  
+              </div>
+              <!-- Job Category Listing End -->
+          </div>
+          <!-- Right content -->
+          <div class="col-xl-9 col-lg-9 col-md-8">
+              <!-- Featured_job_start -->
+              <section class="featured-job-area">
+                  <div class="container">
+                      <!-- Count of Job list Start -->
+                      <div class="row">
+                          <div class="col-lg-12">
+                              <div class="count-job mb-35">
+                                  <span>{{ page_obj.paginator.count }} Jobs found</span>
+                                  
+                              </div>
+                          </div>
+                      </div>
+                      <!-- Count of Job list End -->
+                      <!-- single-job-content -->
+                      {% for job in page_obj %}
+                      <div class="single-job-items mb-30">
+                          <div class="job-items">
+                              <div class="company-img">
+                                  {% if job.company.logo %}
+                                      <a href="{% url 'jobs:job_detail' job.pk %}">
+                                          <img src="{{ job.company.logo.url }}" alt="" style="width: 85px; height: 85px; object-fit: contain; border: 2px solid #ddd; border-radius: 10px; padding: 5px;">
+                                      </a>
+                                  {% endif %}
+                              </div> <!-- Correctly closing the company-img div -->
+
+                              <div class="job-tittle job-tittle2">
+                                {% if job.featured %}
+                                <span class="badge badge-warning">Featured</span>
+                                {% endif %}
+                                
+                                  <a href="{% url 'jobs:job_detail' job.pk %}">
+                                      <h4>{{ job.title }}</h4>
+                                  </a>
+                                  <ul>
+                                      <li>{{ job.company.company_name }}</li>
+                                      <li><i class="fas fa-map-marker-alt"></i> {{ job.location }}</li>
+                                      <li>Ksh {{ job.salary_min }} - {{ job.salary_max }}</li>
+                                  </ul>
+                              </div>
+                          </div> <!-- Closing job-items correctly -->
+
+                          <div class="items-link items-link2 f-right">
+                              <a href="{% url 'jobs:job_detail' job.pk %}">{{ job.get_job_type_display }}</a>
+                              <span>{{ job.created_at|date:"F d, Y" }}</span>
+                          </div>
+                      </div> <!-- Closing single-job-items -->
+
+                      {% empty %}
+                      <p>No Jobs Found</p>
+                      {% endfor %}
+
+                      </div>
+
+                  </div>
+                      
+              </section>
+              <!-- Featured_job_end -->
+          </div>
+      </div>
+  </div>
+</div>
+<!-- Job List Area End -->
+<!--Pagination Start  -->
+<div class="pagination-area pb-115 text-center">
+  <div class="container">
+      <div class="row">
+          <div class="col-xl-12">
+              <div class="single-wrap d-flex justify-content-center">
+                  <nav aria-label="Page navigation example">
+                      <ul class="pagination justify-content-start">
+                          {% if page_obj.has_previous %}
+                              <li class="page-item">
+                                  <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo; Prev</a>
+                              </li>
+                          {% endif %}
+
+                          {% for num in page_obj.paginator.page_range %}
+                              <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                                  <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                              </li>
+                          {% endfor %}
+
+                          {% if page_obj.has_next %}
+                              <li class="page-item">
+                                  <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next &raquo;</a>
+                              </li>
+                          {% endif %}
+                      </ul>
+                  </nav>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+<!--Pagination End  -->
+{% endblock content %}

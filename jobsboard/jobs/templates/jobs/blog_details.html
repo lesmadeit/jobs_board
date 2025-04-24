@@ -1,0 +1,292 @@
+{% extends 'jobs/base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Area Start -->
+<div class="slider-area ">
+    <div class="single-slider section-overly slider-height2 d-flex align-items-center" data-background="{% static 'jobs/img/hero/her.jpg' %}">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="hero-cap text-center">
+                        <h2>Blog Details</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Hero Area End -->
+
+<!-- Blog Area -->
+<section class="blog_area single-post-area section-padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 posts-list">
+                <div class="single-post">
+                    <div class="feature-img">
+                        {% if blog_post.image %}
+                            <img class="img-fluid" src="{{ blog_post.image.url }}" alt="{{ blog_post.title }}">
+                        {% else %}
+                            <img class="img-fluid" src="{% static 'jobs/img/blog/default_blog.png' %}" alt="Default">
+                        {% endif %}
+                    </div>
+                    <div class="blog_details">
+                        <h2>{{ blog_post.title }}</h2>
+                        <ul class="blog-info-link mt-3 mb-4">
+                            <li><a href="{% url 'jobs:blog_list' %}?category={{ blog_post.category.name|urlencode }}"><i class="fa fa-user"></i> {{ blog_post.category.name }}</a></li>
+                            <li><a href="#"><i class="fa fa-comments"></i> {{ blog_post.replies.count }} Comments</a></li>
+                        </ul>
+                        <p class="excert">{{ blog_post.content|truncatewords:50 }}</p>
+                        <p>{{ blog_post.content }}</p>
+                        <div class="quote-wrapper">
+                            <div class="quotes">
+                                {{ blog_post.content|truncatewords:30 }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="navigation-top">
+                    <div class="d-sm-flex justify-content-between text-center">
+                        <p class="like-info">
+                            <form action="{% url 'jobs:toggle_like' blog_post.id %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-link" style="border:none; background:none;">
+                                    <i class="fa fa-heart{% if request.user in blog_post.likes.all.user_set.all %} text-danger{% endif %}"></i>
+                                </button>
+                            </form>
+                            {{ blog_post.likes.count }} people like this
+                        </p>
+                        <div class="col-sm-4 text-center my-2 my-sm-0"></div>
+                        <ul class="social-icons">
+                            <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                            <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                            <li><a href="#"><i class="fab fa-dribbble"></i></a></li>
+                            <li><a href="#"><i class="fab fa-behance"></i></a></li>
+                        </ul>
+                    </div>
+                    <div class="navigation-area">
+                        <div class="row">
+                            {% if previous_post %}
+                            <div class="col-lg-6 col-md-6 col-12 nav-left flex-row d-flex justify-content-start align-items-center">
+                                <div class="thumb">
+                                    <a href="{% url 'jobs:blog_detail' previous_post.id %}">
+                                        {% if previous_post.image %}
+                                            <img style="width: 60px; height: 60px;" class="img-fluid" src="{{ previous_post.image.url }}" alt="{{ previous_post.title }}">
+                                        {% endif %}
+                                    </a>
+                                </div>
+                                <div class="arrow">
+                                    <a href="{% url 'jobs:blog_detail' previous_post.id %}">
+                                        <span class="lnr text-white ti-arrow-left"></span>
+                                    </a>
+                                </div>
+                                <div class="detials">
+                                    <p>Prev Post</p>
+                                    <a href="{% url 'jobs:blog_detail' previous_post.id %}">
+                                        <h4>{{ previous_post.title|truncatewords:5 }}</h4>
+                                    </a>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if next_post %}
+                            <div class="col-lg-6 col-md-6 col-12 nav-right flex-row d-flex justify-content-end align-items-center">
+                                <div class="detials">
+                                    <p>Next Post</p>
+                                    <a href="{% url 'jobs:blog_detail' next_post.id %}">
+                                        <h4>{{ next_post.title|truncatewords:5 }}</h4>
+                                    </a>
+                                </div>
+                                <div class="arrow">
+                                    <a href="{% url 'jobs:blog_detail' next_post.id %}">
+                                        <span class="lnr text-white ti-arrow-right"></span>
+                                    </a>
+                                </div>
+                                <div class="thumb">
+                                    <a href="{% url 'jobs:blog_detail' next_post.id %}">
+                                        {% if next_post.image %}
+                                            <img style="width: 60px; height: 60px;" class="img-fluid" src="{{ next_post.image.url }}" alt="{{ next_post.title }}">
+                                        {% endif %}
+                                    </a>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="blog-author">
+                    <div class="media align-items-center">
+                        <img src="{{ blog_post.author.profile.avatar.url }}" alt="{{ blog_post.author.username }}" style="width: 60px; height: 60px; border-radius: 50%;">
+                        <div class="media-body">
+                            <a href="#">
+                                <h4>{{ blog_post.author.username }}</h4>
+                            </a>
+                            <p>{{ blog_post.author.profile.bio|default:"No bio available." }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comments Area with Nested Replies and Delete -->
+                <div class="comments-area">
+                    <h4>{{ blog_post.replies.count }} Comments</h4>
+                    {% for reply in blog_post.replies.all %}
+                        {% if not reply.parent %}
+                            <div class="comment-list" style="margin-left: 0;">
+                                <div class="single-comment justify-content-between d-flex">
+                                    <div class="user justify-content-between d-flex">
+                                        <div class="thumb">
+                                            <img src="{{ reply.author.profile.avatar.url }}" alt="{{ reply.author.username }}" style="width: 50px; height: 50px; border-radius: 50%;">
+                                        </div>
+                                        <div class="desc">
+                                            <p class="comment">{{ reply.content }}</p>
+                                            <div class="d-flex justify-content-between">
+                                                <div class="d-flex align-items-center">
+                                                    <h5><a href="#">{{ reply.author.username }}</a></h5>
+                                                    <p class="date">{{ reply.created_at|date:"F d, Y \a\t h:i A" }}</p>
+                                                </div>
+                                                <div class="reply-btn">
+                                                    <a href="#" class="btn-reply text-uppercase" data-toggle="collapse" data-target="#reply-form-{{ reply.id }}">Reply</a>
+                                                    {% if user.is_authenticated and reply.author == user %}
+                                                        <a href="{% url 'jobs:delete_reply' blog_post.id reply.id %}" class="btn-reply text-uppercase ml-2" style="color: red;">Delete</a>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <!-- Nested Reply Form -->
+                                            <div id="reply-form-{{ reply.id }}" class="collapse mt-3">
+                                                <form action="{% url 'jobs:add_reply' blog_post.id reply.id %}" method="post">
+                                                    {% csrf_token %}
+                                                    <div class="form-group">
+                                                        <textarea class="form-control w-100" name="comment" rows="3" placeholder="Write your reply..." required></textarea>
+                                                    </div>
+                                                    <button style="border-radius: 5px;" type="submit" class="btn btn-primary">Reply</button>
+                                                </form>
+                                            </div>
+                                            <!-- Nested Replies -->
+                                            {% for child in reply.get_replies %}
+                                                <div class="comment-list" style="margin-left: 50px;">
+                                                    <div class="single-comment justify-content-between d-flex">
+                                                        <div class="user justify-content-between d-flex">
+                                                            <div class="thumb">
+                                                                <img src="{{ child.author.profile.avatar.url }}" alt="{{ child.author.username }}" style="width: 40px; height: 40px; border-radius: 50%;">
+                                                            </div>
+                                                            <div class="desc">
+                                                                <p class="comment">{{ child.content }}</p>
+                                                                <div class="d-flex justify-content-between">
+                                                                    <div class="d-flex align-items-center">
+                                                                        <h5><a href="#">{{ child.author.username }}</a></h5>
+                                                                        <p class="date">{{ child.created_at|date:"F d, Y \a\t h:i A" }}</p>
+                                                                    </div>
+                                                                    <div class="reply-btn">
+                                                                        <a href="#" class="btn-reply text-uppercase" data-toggle="collapse" data-target="#reply-form-{{ child.id }}">Reply</a>
+                                                                        {% if user.is_authenticated and child.author == user %}
+                                                                            <a href="{% url 'jobs:delete_reply' blog_post.id child.id %}" class="btn-reply text-uppercase ml-2" style="color: red;">Delete</a>
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </div>
+                                                                <!-- Nested Reply Form for Child -->
+                                                                <div id="reply-form-{{ child.id }}" class="collapse mt-3">
+                                                                    <form action="{% url 'jobs:add_reply' blog_post.id child.id %}" method="post">
+                                                                        {% csrf_token %}
+                                                                        <div class="form-group">
+                                                                            <textarea class="form-control w-100" name="comment" rows="3" placeholder="Write your reply..." required></textarea>
+                                                                        </div>
+                                                                        <button style="border-radius: 5px;" type="submit" class="btn btn-primary">Reply</button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% empty %}
+                        <p>No comments yet.</p>
+                    {% endfor %}
+                </div>
+
+                <div class="comment-form">
+                    <h4>Leave a Reply</h4>
+                    {% if user.is_authenticated %}
+                    <form class="form-contact comment_form" action="{% url 'jobs:add_reply' blog_post.id %}" method="post" id="commentForm">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <textarea class="form-control w-100" name="comment" id="comment" cols="30" rows="9" placeholder="Write Comment" required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button style="border-radius: 5px;" type="submit" class="button button-contactForm btn_1 boxed-btn">Send</button>
+                        </div>
+                    </form>
+                    {% else %}
+                        <p>Please <a style="color: black;" href="{% url 'jobs:login' %}">log in</a> to leave a reply.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <div class="blog_right_sidebar">
+                    <aside class="single_sidebar_widget search_widget">
+                        <form action="{% url 'jobs:blog_list' %}" method="get">
+                            <div class="form-group">
+                                <div class="input-group mb-3">
+                                    <input type="text" name="q" class="form-control" placeholder="Search Keyword"
+                                        value="{{ request.GET.q }}" onfocus="this.placeholder = ''"
+                                        onblur="this.placeholder = 'Search Keyword'">
+                                    <div class="input-group-append">
+                                        <button class="btns" type="submit"><i class="ti-search"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="button rounded-0 primary-bg text-white w-100 btn_1 boxed-btn" type="submit">Search</button>
+                        </form>
+                    </aside>
+                    <aside class="single_sidebar_widget post_category_widget">
+                        <h4 class="widget_title">Category</h4>
+                        <ul class="list cat-list">
+                            {% for category in categories %}
+                            <li>
+                                <a href="{% url 'jobs:blog_list' %}?category={{ category.name }}" class="d-flex">
+                                    <p>{{ category.name }}</p>
+                                    <p>({{ category.blogpost_set.count }})</p>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </aside>
+                    <aside class="single_sidebar_widget popular_post_widget">
+                        <h3 class="widget_title">Recent Posts</h3>
+                        {% for recent_post in recent_posts %}
+                        <div class="media post_item">
+                            {% if recent_post.image %}
+                                <img src="{{ recent_post.image.url }}" alt="{{ recent_post.title }}" style="width: 90px; height: auto;">
+                            {% else %}
+                                <img src="{% static 'jobs/img/blog/default_post.png' %}" alt="Default" style="width: 90px; height: auto;">
+                            {% endif %}
+                            <div class="media-body">
+                                <a href="{% url 'jobs:blog_detail' recent_post.id %}">
+                                    <h3>{{ recent_post.title|truncatewords:5 }}</h3>
+                                </a>
+                                <p>{{ recent_post.created_at|date:"F d, Y" }}</p>
+                            </div>
+                        </div>
+                        {% empty %}
+                            <p>No recent posts.</p>
+                        {% endfor %}
+                    </aside>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

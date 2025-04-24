@@ -1,0 +1,112 @@
+{% extends 'dashboard/dashboard_base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Applicants for "{{ job.title }}"</h1>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form method="get" class="form-inline">
+                <div class="input-group mb-3">
+                    <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search by name or cover letter..." aria-label="Search">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search fa-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <form method="get" class="form-inline justify-content-end">
+                <select name="status" class="form-control mr-2" onchange="this.form.submit()">
+                    <option value="">All Statuses</option>
+                    <option value="applied" {% if status_filter == 'applied' %}selected{% endif %}>Applied</option>
+                    <option value="shortlisted" {% if status_filter == 'shortlisted' %}selected{% endif %}>Shortlisted</option>
+                    <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+                    <option value="hired" {% if status_filter == 'hired' %}selected{% endif %}>Hired</option>
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <!-- Applicants Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Applicants</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="applicantsTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Applicant</th>
+                            <th>Status</th>
+                            <th>Application Date</th>
+                            <th>Resume</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for application in applications %}
+                        <tr>
+                            <td>{{ application.applicant.username }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if application.status == 'applied' %}badge-info
+                                    {% elif application.status == 'shortlisted' %}badge-success
+                                    {% elif application.status == 'rejected' %}badge-danger
+                                    {% elif application.status == 'hired' %}badge-primary{% endif %}">
+                                    {{ application.status|capfirst }}
+                                </span>
+                            </td>
+                            <td>{{ application.applied_at|date:"Y-m-d H:i" }}</td>
+                            <td>
+                                <a href="{% url 'dashboard:download_resume' application.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-download"></i> Download
+                                </a>
+                                <!-- Optional: Add a viewer link if you have a viewer setup -->
+                            </td>
+                            <td>
+                                {% if application.status != 'shortlisted' %}
+                                <a href="{% url 'dashboard:update_application_status' application.id 'shortlisted' %}" class="btn btn-success btn-sm">
+                                    <i class="fas fa-check"></i> Shortlist
+                                </a>
+                                {% endif %}
+                                {% if application.status != 'rejected' %}
+                                <a href="{% url 'dashboard:update_application_status' application.id 'rejected' %}" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-times"></i> Reject
+                                </a>
+                                {% endif %}
+                                {% if application.status != 'hired' %}
+                                <a href="{% url 'dashboard:update_application_status' application.id 'hired' %}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-user-check"></i> Hire
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No applicants found for this job.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    $('#applicantsTable').DataTable({
+        "pageLength": 10,
+        "order": [[2, "desc"]]  // Sort by Application Date descending
+    });
+});
+</script>
+{% endblock %}
