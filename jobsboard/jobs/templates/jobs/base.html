@@ -86,7 +86,8 @@
                                         <li><a href="{% url 'jobs:contact' %}">Contact</a></li>
     
                                         {% if user.is_authenticated %}
-                                            <li><a href="#">Profiles <i class="bi bi-caret-down-fill"></i></a>
+                                            <!--<li><a href="#">Profiles <img src="/static/jobs/icons/caret-down-fill.svg" alt="Dropdown" style="width: 16px; height: 16px;"></a></li>-->
+                                            <li><a href="#">Profiles <img src="/static/jobs/icons/caret-down-fill.svg" alt="Dropdown" style="width: 16px; height: 16px;"></i></a>
                                                 <ul class="submenu">
                                                     <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
                                                     {% if user.profile.user_type == "employer" %}

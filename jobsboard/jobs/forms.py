@@ -142,7 +142,7 @@ class MessageForm(forms.ModelForm):
 class ResponseTemplateForm(forms.ModelForm):
     class Meta:
         model = ResponseTemplate
-        fields = ['tittle', 'content']
+        fields = ['title', 'content']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Template Title'}),
             'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Template Content', 'rows': 4}),

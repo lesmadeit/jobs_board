@@ -1,0 +1,29 @@
+{% extends 'jobs/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Send Message to {{ company.company_name }}</h2>
+    <div class="card shadow">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="id_job" class="form-label">Related Job (Optional)</label>
+                    {{ form.job }}
+                </div>
+                <div class="mb-3">
+                    <label for="id_subject" class="form-label">Subject</label>
+                    {{ form.subject }}
+                </div>
+                <div class="mb-3">
+                    <label for="id_body" class="form-label">Message</label>
+                    {{ form.body }}
+                </div>
+                <button type="submit" class="btn btn-primary">Send Message</button>
+                <a href="{% url 'jobs:jobs' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

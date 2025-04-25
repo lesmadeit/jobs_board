@@ -1,0 +1,50 @@
+{% extends 'dashboard/dashboard_base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Reply to Message</h1>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Original Message</h6>
+        </div>
+        <div class="card-body">
+            <p><strong>From:</strong> {{ original_message.sender.username }}</p>
+            <p><strong>Subject:</strong> {{ original_message.subject }}</p>
+            <p><strong>Job:</strong> {{ original_message.job.title|default:"N/A" }}</p>
+            <p><strong>Date:</strong> {{ original_message.created_at|date:"Y-m-d H:i" }}</p>
+            <p><strong>Message:</strong></p>
+            <blockquote>{{ original_message.body }}</blockquote>
+        </div>
+    </div>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Your Reply</h6>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="id_subject" class="form-label">Subject</label>
+                    {{ form.subject }}
+                </div>
+                <div class="mb-3">
+                    <label for="id_body" class="form-label">Reply</label>
+                    {{ form.body }}
+                </div>
+                <div class="mb-3">
+                    <label for="template" class="form-label">Use Template</label>
+                    <select name="template" class="form-control" onchange="this.form.submit()">
+                        <option value="">Select a template...</option>
+                        {% for template in templates %}
+                        <option value="{{ template.id }}">{{ template.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Send Reply</button>
+                <a href="{% url 'dashboard:message_inbox' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

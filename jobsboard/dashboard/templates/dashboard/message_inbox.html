@@ -1,0 +1,70 @@
+{% extends 'dashboard/dashboard_base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Messages Inbox {% if unread_count %}({{ unread_count }} Unread){% endif %}</h1>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Messages</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="messagesTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>From</th>
+                            <th>Subject</th>
+                            <th>Job</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for message in messages %}
+                        <tr>
+                            <td>{{ message.sender.username }}</td>
+                            <td>{{ message.subject }}</td>
+                            <td>{{ message.job.title|default:"N/A" }}</td>
+                            <td>{{ message.created_at|date:"Y-m-d H:i" }}</td>
+                            <td>
+                                {% if message.is_read %}
+                                <span class="badge badge-success">Read</span>
+                                {% else %}
+                                <span class="badge badge-warning">Unread</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'dashboard:reply_message' message.id %}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-reply"></i> Reply
+                                </a>
+                                {% if not message.is_read %}
+                                <a href="{% url 'dashboard:message_inbox' %}?mark_read={{ message.id }}" class="btn btn-info btn-sm">
+                                    <i class="fas fa-eye"></i> Mark Read
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No messages found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    $('#messagesTable').DataTable({
+        "pageLength": 10,
+        "order": [[3, "desc"]]  // Sort by Date descending
+    });
+});
+</script>
+{% endblock %}

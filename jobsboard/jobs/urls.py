@@ -30,6 +30,6 @@ urlpatterns = [
     path('blog/reply/<int:blog_id>/<int:parent_id>/', views.add_reply, name='add_reply'),
     path('blog/delete-reply/<int:blog_id>/<int:reply_id>/', views.delete_reply, name='delete_reply'),
     path('blog/like/<int:blog_id>/', views.toggle_like, name='toggle_like'),
-    
+    path('company/<int:company_id>/message/', views.send_message, name='send_message'),
 
 ]

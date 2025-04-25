@@ -452,7 +452,7 @@ def send_message(request, company_id):
     company = get_object_or_404(CompanyProfile, id=company_id)
     if request.user.profile.user_type != 'candidate':
         messages.error(request, "Only candidates can send messages.")
-        return redirect('jobs:job_list')
+        return redirect('jobs:jobs')
     
     if request.method == 'POST':
         form = MessageForm(request.POST, company=company)
@@ -461,9 +461,9 @@ def send_message(request, company_id):
             message.sender = request.user
             message.recipient_company = company
             message.save()
-            messages.save()
+            message.save()
             messages.success(request, "Your message has been sent.")
-            return redirect('jobs:job_list')
+            return redirect('jobs:jobs')
     else:
         form = MessageForm(company=company)
     return render(request, 'jobs/send_message.html', {'form': form, 'company': company})

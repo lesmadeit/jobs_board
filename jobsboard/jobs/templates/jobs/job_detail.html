@@ -113,13 +113,18 @@
                     </ul>
                     {% if user.profile.user_type != "employer" %}
                       <div class="apply-btn2">
-                          <a href="{% url 'apply_job' job.pk %}" class="btn">Apply Now</a>
+                          <a href="{% url 'jobs:apply_job' job.pk %}" class="btn">Apply Now</a>
                       </div>
                       <br>
                       <div class="apply-btn2">
                         <a href="{{ job.external_apply_url }}" class="btn">Apply Externally</a>
                       </div>
-                   {% endif %}
+                      <br>
+                    {% endif %}
+
+                    {% if user.is_authenticated and user.profile.user_type == 'candidate' %}
+                    <a href="{% url 'jobs:send_message' job.company.id %}" class="btn btn-primary">Contact Employer</a>
+                    {% endif %}
 
                    {% if user.is_authenticated and user == job.company.user %}
                       <div class="apply-btn2">
