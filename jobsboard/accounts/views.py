@@ -8,8 +8,13 @@ from django.contrib.auth.decorators import login_required
 from .models import Profile
 from django.contrib.auth import logout
 from django.shortcuts import render, redirect, get_object_or_404
-
-
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode
+from .token import account_activation_token
+from django.utils.encoding import force_bytes
+from django.core.mail import EmailMessage
+from django.contrib.auth.models import User
 from .forms import RegisterForm, LoginForm, UpdateUserForm, UpdateProfileForm
 
 
@@ -37,12 +42,28 @@ class RegisterView(View):
         form = self.form_class(request.POST)
 
         if form.is_valid():
-            form.save()
+            user = form.save(commit=False)
+            user.is_active = False
+            user.save()
 
-            username = form.cleaned_data.get('username')
-            messages.success(request, f'Account created for {username} you can now log in using your credentials')
+            # User activation
+            current_site = get_current_site(request)
+            subject = 'Please activate your account'
+            message = render_to_string('shop/accounts/email_activate/account_verification_email.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': account_activation_token.make_token(user),
+            })
+            to_email = form.cleaned_data.get('email')
+            send_email = EmailMessage(subject, message, to=[to_email])
+            send_email.content_subtype = 'html'  # Set email as HTML
+            send_email.send()
 
-            return redirect(to='login')
+
+            messages.success(request, 'Please check your email to activate your account.')
+            return redirect('/account/register/?command=verification&email=' + to_email)      
+            
         
         return render(request, self.template_name, {'form': form})
 
