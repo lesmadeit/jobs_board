@@ -13,6 +13,7 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode
 from .token import account_activation_token
 from django.utils.encoding import force_bytes
+
 from django.core.mail import EmailMessage
 from django.contrib.auth.models import User
 from .forms import RegisterForm, LoginForm, UpdateUserForm, UpdateProfileForm
@@ -49,7 +50,7 @@ class RegisterView(View):
             # User activation
             current_site = get_current_site(request)
             subject = 'Please activate your account'
-            message = render_to_string('shop/accounts/email_activate/account_verification_email.html', {
+            message = render_to_string('accounts/account_verification_email.html', {
                 'user': user,
                 'domain': current_site.domain,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
@@ -109,6 +110,22 @@ class CustomLogoutView(View):
     def get(self, request):
         logout(request)
         return render(request, 'accounts/logout.html')
+    
+def activate(request, uidb64, token):
+    try:
+        uid = (urlsafe_base64_encode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        messages.success(request, 'Your account has been successfully. You can now log in.')
+        return redirect('login')
+    else:
+        messages.error(request, 'The activation link is invalid or has expired')
+        return redirect('register')
     
 
 

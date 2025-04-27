@@ -3,7 +3,7 @@ from .views import  profile, RegisterView, view_profile, profile_update
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
-from accounts.views import CustomLoginView, CustomLogoutView, ResetPasswordView, ChangePasswordView
+from accounts.views import CustomLoginView, CustomLogoutView, ResetPasswordView, ChangePasswordView, activate
 
 from accounts.forms import LoginForm
 
@@ -13,6 +13,7 @@ urlpatterns = [
      
     
     path('register/', RegisterView.as_view(), name="register"),
+    path('activate/<uidb64>/<token>/', activate, name='activate'),
     path('login/', CustomLoginView.as_view(redirect_authenticated_user=True, template_name='accounts/login.html',
                                            authentication_form=LoginForm), name='login'),
     path('profile/create/', profile, name='profile'),
