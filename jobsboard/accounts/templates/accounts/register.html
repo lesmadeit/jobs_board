@@ -1,17 +1,35 @@
 {% extends "jobs/base.html" %}
-{% block title %} Register Page {% endblock title%}
+{% block title %} Register Page {% endblock title %}
 {% block content %}
 <br><br><br>
-    <div class="form-content my-3 p-3">
-		<div class="container">
-            
-            <div class="row justify-content-center">
-                <div class="col-lg-7">
-                    <div class="card shadow-lg border-0 rounded-lg mt-0 mb-5">
-                        <div class="card-header justify-content-center">
-                        	<h3 class="font-weight-light my-4 text-center">Create Account</h3>
-                        </div>
-                        <div class="card-body">
+<div class="form-content my-3 p-3">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="card shadow-lg border-0 rounded-lg mt-0 mb-5">
+                    <div class="card-header justify-content-center">
+                        <h3 class="font-weight-light my-4 text-center">Create Account</h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- Messages Block -->
+                        {% if messages %}
+                            <div class="messages">
+                                {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <!-- Verification Message or Form -->
+                        {% if request.GET.command == 'verification' %}
+                            <!-- Optional: Additional static message or leave empty to rely on messages framework -->
+                            <p>Please check your email to activate your - we have sent a verification email to {{ request.GET.email }}.</p>
+                        {% else %}
                             <form method="POST">
                                 {% csrf_token %}
                                 {% if form.errors %}
@@ -42,18 +60,18 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="col-md-6">
-		                                <div class="form-group">
-		                                	<label class="small mb-1">Username</label>
-		                                    {{ form.username }}
-		                                </div>
-		                            </div>
+                                        <div class="form-group">
+                                            <label class="small mb-1">Username</label>
+                                            {{ form.username }}
+                                        </div>
+                                    </div>
                                     <div class="col-md-6">
-		                                <div class="form-group">
-		                                	<label class="small mb-1">Email</label>
-		                                    {{ form.email }}
-		                                </div>
-		                            </div>
-		                        </div>
+                                        <div class="form-group">
+                                            <label class="small mb-1">Email</label>
+                                            {{ form.email }}
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="form-row">
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -63,7 +81,6 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-
                                         <div class="form-group">
                                             <label class="small mb-1">Confirm Password</label>
                                             {{ form.password2 }}
@@ -83,16 +100,16 @@
                                     <button type="submit" class="col-md-12 btn btn-dark">Sign Up</button><br><br>
                                 </div>
                             </form>
-                        </div>
-                        <div class="card-footer text-center">
-                            <div class="small">
-                                <a href="{% url 'accounts:login' %}">Have an account? Go to Sign in</a>
-                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer text-center">
+                        <div class="small">
+                            <a href="{% url 'accounts:login' %}">Have an account? Go to Sign in</a>
                         </div>
                     </div>
                 </div>
             </div>
-        
         </div>
-	</div>
+    </div>
+</div>
 {% endblock content %}

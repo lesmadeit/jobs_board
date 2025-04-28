@@ -58,12 +58,12 @@ class RegisterView(View):
             })
             to_email = form.cleaned_data.get('email')
             send_email = EmailMessage(subject, message, to=[to_email])
-            send_email.content_subtype = 'html'  # Set email as HTML
+            send_email.content_subtype = 'html'  
             send_email.send()
 
 
             messages.success(request, 'Please check your email to activate your account.')
-            return redirect('/account/register/?command=verification&email=' + to_email)      
+            return redirect('/register/?command=verification&email=' + to_email)      
             
         
         return render(request, self.template_name, {'form': form})
@@ -121,11 +121,11 @@ def activate(request, uidb64, token):
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
         user.save()
-        messages.success(request, 'Your account has been successfully. You can now log in.')
-        return redirect('login')
+        messages.success(request, 'Your account has been successfully activated. You can now log in.')
+        return redirect('accounts:login')
     else:
         messages.error(request, 'The activation link is invalid or has expired')
-        return redirect('register')
+        return redirect('accounts:register')
     
 
 
