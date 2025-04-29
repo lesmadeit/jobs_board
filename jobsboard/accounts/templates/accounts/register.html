@@ -25,11 +25,7 @@
                             </div>
                         {% endif %}
 
-                        <!-- Verification Message or Form -->
-                        {% if request.GET.command == 'verification' %}
-                            <!-- Optional: Additional static message or leave empty to rely on messages framework -->
-                            <p>Please check your email to activate your - we have sent a verification email to {{ request.GET.email }}.</p>
-                        {% else %}
+                        
                             <form method="POST">
                                 {% csrf_token %}
                                 {% if form.errors %}
@@ -100,7 +96,7 @@
                                     <button type="submit" class="col-md-12 btn btn-dark">Sign Up</button><br><br>
                                 </div>
                             </form>
-                        {% endif %}
+                        
                     </div>
                     <div class="card-footer text-center">
                         <div class="small">

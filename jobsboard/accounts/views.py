@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.contrib.auth.views import LoginView, PasswordResetView, PasswordChangeView
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
@@ -10,9 +10,10 @@ from django.contrib.auth import logout
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
-from django.utils.http import urlsafe_base64_encode
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from .token import account_activation_token
 from django.utils.encoding import force_bytes
+from django.utils.encoding import force_str
 
 from django.core.mail import EmailMessage
 from django.contrib.auth.models import User
@@ -62,8 +63,8 @@ class RegisterView(View):
             send_email.send()
 
 
-            messages.success(request, 'Please check your email to activate your account.')
-            return redirect('/register/?command=verification&email=' + to_email)      
+            messages.success(request, f'A verification email has been sent to {to_email}. Please check your inbox (and spam folder) to activate your account.')
+            return redirect(f"{reverse('accounts:register')}?command=verification")      
             
         
         return render(request, self.template_name, {'form': form})
@@ -92,17 +93,13 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
     template_name = 'accounts/password_reset.html'
     email_template_name = 'accounts/password_reset_email.html'
     subject_template_name = 'accounts/password_reset_subject'
-    success_message_name = 'accounts/password_reset_subject'
-    success_message = "We've emailed you instructions for setting your password, " \
-                      "if an account exists with the email you entered. You should receive them shortly." \
-                      " If you don't receive an email, " \
-                      "please make sure you've entered the address you registered with, and check your spam folder."
+    success_url = reverse_lazy('accounts:password_reset_done')
     
 
 class ChangePasswordView(SuccessMessageMixin, PasswordChangeView):
     template_name = 'accounts/change_password.html'
     success_message = "Succesfully Changed Your Password"
-    success_url = reverse_lazy('jobsapp-home')
+    success_url = reverse_lazy('/')
 
 
 
@@ -113,7 +110,7 @@ class CustomLogoutView(View):
     
 def activate(request, uidb64, token):
     try:
-        uid = (urlsafe_base64_encode(uidb64))
+        uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
