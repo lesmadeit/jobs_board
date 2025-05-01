@@ -19,7 +19,7 @@ from django.core.mail import EmailMessage
 from django.contrib.auth.models import User
 from .forms import RegisterForm, LoginForm, UpdateUserForm, UpdateProfileForm
 
-
+from .tasks import send_activation_email, send_password_reset_email
 
 
 class RegisterView(View):
@@ -48,24 +48,16 @@ class RegisterView(View):
             user.is_active = False
             user.save()
 
-            # User activation
-            current_site = get_current_site(request)
-            subject = 'Please activate your account'
-            message = render_to_string('accounts/account_verification_email.html', {
-                'user': user,
-                'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': account_activation_token.make_token(user),
-            })
+            # Trigger Celery task for sending activation email
+            current_site = get_current_site(request)      
             to_email = form.cleaned_data.get('email')
-            send_email = EmailMessage(subject, message, to=[to_email])
-            send_email.content_subtype = 'html'  
-            send_email.send()
+            send_activation_email.delay(user.pk, current_site.domain, to_email)
 
-
-            messages.success(request, f'A verification email has been sent to {to_email}. Please check your inbox (and spam folder) to activate your account.')
-            return redirect(f"{reverse('accounts:register')}?command=verification")      
-            
+            messages.success(
+                request,
+                f'A verification email has been sent to {to_email}. Please check your inbox (and spam folder) to activate your account.'
+            )
+            return redirect(f"{reverse('accounts:register')}?command=verification")
         
         return render(request, self.template_name, {'form': form})
 
@@ -94,6 +86,25 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
     email_template_name = 'accounts/password_reset_email.html'
     subject_template_name = 'accounts/password_reset_subject'
     success_url = reverse_lazy('accounts:password_reset_done')
+
+    def send_mail(self, subject_template_name, email_template_name, context, from_email, to_email, html_email_template_name=None):
+        """
+        Override send_mail to use Celery task instead of sending email directly.
+        """
+        user_id = context['user'].pk
+        domain = context['domain']
+        send_password_reset_email.delay(
+            user_id,
+            domain,
+            to_email,
+            email_template_name,
+            subject_template_name
+        )
+
+
+
+
+
     
 
 class ChangePasswordView(SuccessMessageMixin, PasswordChangeView):
@@ -107,6 +118,8 @@ class CustomLogoutView(View):
     def get(self, request):
         logout(request)
         return render(request, 'accounts/logout.html')
+    
+
     
 def activate(request, uidb64, token):
     try:

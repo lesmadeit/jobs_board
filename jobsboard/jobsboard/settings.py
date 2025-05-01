@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -137,6 +138,16 @@ MEDIA_URL = '/media/'
 
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = 'login'
+
+
+CELERY_BROKER_URL = 'amqp://'+config('RABBITMQUSER')+':'+config('RABBITMQPASSWORD')+'@'+config('RABBITMQHOST')+'/'+config('RABBITMQVHOST')
+#CELERY_BROKER_URL = 'redis://localhost:6379/0' #redis broker
+CELERY_RESULT_BACKEND = 'redis://'+config('REDIS_IP')+':6379'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json', 'application/text']
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_WORKER_MAX_TASKS_PER_CHILD = 100
 
 
 # Default primary key field type
